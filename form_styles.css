@@ -1,0 +1,232 @@
+/* -------------------------------------------
+   UNIVERSAL CONFLICT-FREE FORM STYLING
+   Everything is scoped under .enq-wrap
+------------------------------------------- */
+
+.enq-wrap{
+    max-width:760px;
+    /* margin:12px auto;
+    padding:10px; */
+    box-sizing:border-box;
+    font-family: Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* THEMING (Neutral tones — fits all websites) */
+.enq-wrap{
+   --enq-bg:#f7f7f7;
+   --enq-card:#ffffff;
+   --enq-text:#1f1f1f;
+   --enq-border:#d1d5db;     /* Neutral border */
+   --enq-btn:#4b5563;         /* UNIVERSAL GRAY BUTTON */
+   --enq-btn-text:#ffffff;
+   --enq-btn-ghost:#e5e7eb;
+}
+
+/* Card */
+.enq-card{
+   background:var(--enq-card);
+   border:1px solid var(--enq-border);
+   border-radius:8px;
+   padding:14px;
+   box-sizing:border-box;
+   color:var(--enq-text);
+}
+
+/* Header */
+.enq-card h1{
+    font-size:20px;
+    margin:0 0 4px 0;
+    color:var(--enq-text);
+}
+
+.enq-lead{
+    margin:0;
+    font-size:13px;
+    color:var(--enq-text);
+}
+
+/* GRID FORM */
+.enq-form{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:6px;
+    padding-left:6px;
+    padding-right:6px;
+    box-sizing:border-box;
+}
+
+.enq-full{ grid-column:1/-1; }
+
+.enq-field{
+    width:100%;
+    box-sizing:border-box;
+}
+
+.enq-input,
+.enq-form input[type=text],
+.enq-form input[type=email],
+.enq-form input[type=tel],
+.enq-form select,
+.enq-form textarea{
+    width:100%;
+    padding:7px 9px;
+    border:1px solid var(--enq-border);
+    border-radius:4px;
+    font-size:13px;
+    color:var(--enq-text);
+    background:white;
+    box-sizing:border-box;
+}
+
+.enq-form textarea{
+    resize:vertical;
+    min-height:56px;
+}
+
+.enq-error{
+   color:#b91c1c;
+   font-size:12px;
+   margin-top:2px;
+   height:14px;
+}
+
+/* ACTIONS */
+.enq-actions{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+/* BUTTONS */
+.enq-btn{
+   padding:8px 14px;
+   font-size:14px;
+   border-radius:6px;
+   cursor:pointer;
+   box-sizing:border-box;
+   font-family:inherit;
+}
+
+/* UNIVERSAL GRAY BUTTON (works everywhere) */
+.enq-btn-primary{
+   background:var(--enq-btn);
+   color:var(--enq-btn-text);
+   border:1px solid var(--enq-btn);
+}
+
+.enq-btn-ghost{
+   background:white;
+   color:#111;
+   border:1px solid var(--enq-btn-ghost);
+}
+
+/* CAPTCHA */
+.enq-captcha-row{
+   display:flex;
+   align-items:center;
+   gap:8px;
+}
+
+.enq-captcha-img{
+   min-width:200px;
+   min-height:70px;
+   width:200px;
+   height:70px;
+   border:1px solid var(--enq-border);
+   background:#fafafa;
+   color:#1f1f1f;
+   font-size:12px;
+   display:flex;
+   justify-content:center;
+   align-items:center;
+   box-sizing:border-box;
+   overflow:hidden;
+   position:relative;
+   cursor:pointer;
+   transition:transform 0.2s;
+}
+
+.enq-captcha-img:hover{
+   transform:scale(1.1);
+   z-index:10;
+   box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+.enq-captcha-img img{
+   width:auto;
+   height:100%;
+   max-width:100%;
+   object-fit:contain;
+   image-rendering:auto;
+   display:block;
+}
+
+.enq-btn-refresh{
+   background:none;
+   border:none;
+   font-size:16px;
+   cursor:pointer;
+   color:#111;
+}
+
+.enq-flex-grow{
+   flex:1;
+   min-width:0;
+}
+
+/* LOADER OVERLAY */
+.form-loader-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    backdrop-filter:blur(2px);
+}
+
+.form-loader{
+    background:white;
+    padding:30px 40px;
+    border-radius:8px;
+    text-align:center;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+}
+
+.form-loader-spinner{
+    width:40px;
+    height:40px;
+    border:4px solid #e5e7eb;
+    border-top-color:var(--enq-btn);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+    margin:0 auto 15px;
+}
+
+.form-loader p{
+    margin:0;
+    color:var(--enq-text);
+    font-size:14px;
+}
+
+@keyframes spin{
+    to{ transform:rotate(360deg); }
+}
+
+/* RESPONSIVE */
+@media (max-width:640px){
+   .enq-form{ grid-template-columns:1fr; gap:10px; }
+   .enq-captcha-img{
+      width:100%;
+      min-width:100%;
+      max-width:100%;
+   }
+   .enq-captcha-row{
+      flex-wrap:wrap;
+   }
+}
