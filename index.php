@@ -4,10 +4,10 @@
  * Handles all public-facing pages including city-wise dynamic pages
  */
 
-require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/AppContext.php';
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/AppContext.php';
 
 $db = Database::getInstance()->getConnection();
 // Create shared application context (brands, categories, contact, etc.)

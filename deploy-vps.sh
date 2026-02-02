@@ -24,7 +24,7 @@ DOMAIN="spark-group.in"
 WEB_ROOT="/var/www/${DOMAIN}"
 DB_NAME="dealer_website"
 DB_USER="dealer_user"
-DB_PASS=""  # Will prompt if empty
+DB_PASS="y{0N,n}h_G-SrWwD"  # Will prompt if empty
 PHP_VERSION="8.3"  # or 8.2, 8.1
 
 echo -e "${GREEN}========================================${NC}"

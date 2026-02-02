@@ -34,40 +34,40 @@ RewriteRule ^admin/(.*)$ admin/index.php?route=$1 [L,QSA]
 # ====================================
 
 # Sitemap
-RewriteRule ^sitemap\.xml$ public/sitemap.php [L]
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
 # API Routes
-RewriteRule ^api/(.*)$ public/api/$1 [L,QSA]
+RewriteRule ^api/(.*)$ api/$1 [L,QSA]
 
 # Static Pages
-RewriteRule ^about-us$ public/index.php?page=about [L,QSA]
-RewriteRule ^certifications$ public/index.php?page=certifications [L,QSA]
-RewriteRule ^testimonials$ public/index.php?page=testimonials [L,QSA]
-RewriteRule ^contact-us$ public/index.php?page=contact [L,QSA]
-RewriteRule ^enquiry$ public/index.php?page=enquiry [L,QSA]
-RewriteRule ^search$ public/index.php?type=search [L,QSA]
-RewriteRule ^404$ public/index.php?page=404 [L,QSA]
+RewriteRule ^about-us$ index.php?page=about [L,QSA]
+RewriteRule ^certifications$ index.php?page=certifications [L,QSA]
+RewriteRule ^testimonials$ index.php?page=testimonials [L,QSA]
+RewriteRule ^contact-us$ index.php?page=contact [L,QSA]
+RewriteRule ^enquiry$ index.php?page=enquiry [L,QSA]
+RewriteRule ^search$ index.php?type=search [L,QSA]
+RewriteRule ^404$ index.php?page=404 [L,QSA]
 
 # Product Routes (with optional city) - MUST come first (most specific)
 # /bosch/power-tools/drill-machine-pune (with city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)-([a-z0-9-]+)$ public/index.php?type=product&brand=$1&category=$2&slug=$3&city=$4 [L,QSA]
+RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)-([a-z0-9-]+)$ index.php?type=product&brand=$1&category=$2&slug=$3&city=$4 [L,QSA]
 # /bosch/power-tools/drill-machine (without city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)$ public/index.php?type=product&brand=$1&category=$2&slug=$3 [L,QSA]
+RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)$ index.php?type=product&brand=$1&category=$2&slug=$3 [L,QSA]
 
 # Category Routes (with optional city) - MUST come before brand routes
 # /bosch/power-tools-pune (with city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)-([a-z0-9-]+)$ public/index.php?type=category&brand=$1&slug=$2&city=$3 [L,QSA]
+RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)-([a-z0-9-]+)$ index.php?type=category&brand=$1&slug=$2&city=$3 [L,QSA]
 # /bosch/power-tools (without city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)$ public/index.php?type=category&brand=$1&slug=$2 [L,QSA]
+RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)$ index.php?type=category&brand=$1&slug=$2 [L,QSA]
 
 # Brand Routes (with optional city)
 # /bosch-pune (with city) - MUST come before single slug
-RewriteRule ^([a-z0-9-]+)-([a-z0-9-]+)$ public/index.php?type=brand&slug=$1&city=$2 [L,QSA]
+RewriteRule ^([a-z0-9-]+)-([a-z0-9-]+)$ index.php?type=brand&slug=$1&city=$2 [L,QSA]
 # /bosch (without city) - Fallback to single slug (brand only)
-RewriteRule ^([a-z0-9-]+)$ public/index.php?type=brand&slug=$1 [L,QSA]
+RewriteRule ^([a-z0-9-]+)$ index.php?type=brand&slug=$1 [L,QSA]
 
 # Home Page
-RewriteRule ^$ public/index.php [L,QSA]
+RewriteRule ^$ index.php [L,QSA]
 
 # ====================================
 # File Access Protection

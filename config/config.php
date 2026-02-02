@@ -13,8 +13,6 @@ if (!defined('SITE_URL')) {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
-    // Remove /public from path if present
-    $scriptPath = str_replace('/public', '', $scriptPath);
     // For root domain, use empty path; for subdirectory, use the path
     $basePath = ($scriptPath === '/' || $scriptPath === '\\') ? '' : rtrim($scriptPath, '/');
     define('SITE_URL', $protocol . $host . $basePath);
@@ -27,7 +25,6 @@ define('ADMIN_EMAIL', 'admin@dealerwebsite.com');
 // Paths
 define('ROOT_PATH', dirname(__DIR__));
 define('ADMIN_PATH', ROOT_PATH . '/admin');
-define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('UPLOAD_PATH', ROOT_PATH . '/uploads');
 define('UPLOAD_URL', SITE_URL . '/uploads');
 
