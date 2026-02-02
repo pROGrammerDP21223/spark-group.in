@@ -4,7 +4,7 @@ uploads/*
 !uploads/index.php
 
 # Configuration (if sensitive)
-# config/database.php
+config/
 
 # IDE
 .idea/
