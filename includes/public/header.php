@@ -297,7 +297,7 @@ $headerEmail = !empty($contactMap['email']) ? $contactMap['email'][0]['value'] :
                                 <?php endif; ?>
                                 
                                
-                                <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'testimonials') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/testimonials">Testimonials</a></li>
+                                <!-- <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'testimonials') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/testimonials">Testimonials</a></li> -->
                                 <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'contact') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/contact-us">Contact Us</a></li>
                                 <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'enquiry') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/enquiry">Enquiry</a></li>
 
