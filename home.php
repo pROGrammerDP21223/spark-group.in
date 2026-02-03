@@ -10,65 +10,17 @@ if (!isset($db)) {
     $db = Database::getInstance()->getConnection();
 }
 
-// Get all active brands with their categories
+// Get all active brands
 $allBrands = $db->query("SELECT * FROM brands WHERE status = 'active' ORDER BY sort_order ASC, name ASC LIMIT 10")->fetchAll();
-
-// Get categories by brand for tabs
-$categoriesByBrand = [];
-foreach ($allBrands as $brand) {
-    // First get categories
-    $brandCategories = $db->prepare("SELECT c.*, ? as brand_slug
-                                      FROM product_categories c 
-                                      WHERE c.brand_id = ? AND c.status = 'active' 
-                                      ORDER BY c.sort_order ASC, c.name ASC");
-    $brandCategories->execute([$brand['slug'], $brand['id']]);
-    $categories = $brandCategories->fetchAll();
-    
-    // Then get product counts for each category separately
-    foreach ($categories as &$category) {
-        $category['brand_slug'] = $brand['slug'];
-        // Ensure category_id is an integer
-        $categoryId = (int)$category['id'];
-        
-        // Get active products count - using exact same query as category_detail.php
-        $countQuery = $db->prepare("SELECT COUNT(*) FROM products WHERE category_id = ? AND status = 'active'");
-        $countQuery->execute([$categoryId]);
-        $count = $countQuery->fetchColumn();
-        // Ensure we get a proper integer value
-        $category['product_count'] = ($count !== false && $count !== null) ? (int)$count : 0;
-        
-        // Debug: Log the count (remove after fixing)
-        // error_log("Category ID: {$categoryId}, Product Count: {$category['product_count']}");
-    }
-    unset($category); // Break reference
-    $categoriesByBrand[$brand['id']] = $categories;
-}
-
-// Get all categories with product counts
-$categories = $db->query("SELECT c.*, b.slug as brand_slug
-                          FROM product_categories c 
-                          LEFT JOIN brands b ON c.brand_id = b.id 
-                          WHERE c.status = 'active' 
-                          ORDER BY c.sort_order ASC, c.name ASC 
-                          LIMIT 8")->fetchAll();
-// Add product counts separately
-foreach ($categories as &$category) {
-    $countQuery = $db->prepare("SELECT COUNT(*) FROM products WHERE category_id = ? AND status = 'active'");
-    $countQuery->execute([$category['id']]);
-    $count = $countQuery->fetchColumn();
-    $category['product_count'] = $count !== false ? (int)$count : 0;
-}
-unset($category); // Break reference
 
 // Get slider images from database
 $sliderImages = $db->query("SELECT * FROM slider_images WHERE status = 'active' ORDER BY sort_order ASC, id ASC")->fetchAll();
 
 // Get featured products
-$featuredProducts = $db->query("SELECT p.*, b.slug as brand_slug, c.slug as category_slug, b.name as brand_name, c.name as category_name
+$featuredProducts = $db->query("SELECT p.*, b.slug as brand_slug, b.name as brand_name
                                 FROM products p
                                 LEFT JOIN brands b ON p.brand_id = b.id
-                                LEFT JOIN product_categories c ON p.category_id = c.id
-                                WHERE p.featured = 1 AND p.status = 'active' AND b.status = 'active' AND c.status = 'active'
+                                WHERE p.featured = 1 AND p.status = 'active' AND b.status = 'active'
                                 ORDER BY p.sort_order ASC, p.created_at DESC
                                 LIMIT 12")->fetchAll();
 
@@ -200,43 +152,34 @@ require __DIR__ . '/includes/public/header.php';
                         <?php $firstBrand = true; foreach ($allBrands as $brand): ?>
                         <div class="tab-pane fade <?php echo $firstBrand ? 'show active' : ''; ?>" id="arrival-<?php echo $brand['id']; ?>" role="tabpanel" aria-labelledby="arrival-tab-<?php echo $brand['id']; ?>">
                             <?php 
-                            $categoryCount = !empty($categoriesByBrand[$brand['id']]) ? count($categoriesByBrand[$brand['id']]) : 0;
-                            $shouldLoop = $categoryCount > 4; // Only loop if more than 4 items
+                            // Get products for this brand
+                            $brandProducts = $db->prepare("SELECT * FROM products WHERE brand_id = ? AND status = 'active' ORDER BY sort_order ASC, name ASC LIMIT 12");
+                            $brandProducts->execute([$brand['id']]);
+                            $brandProducts = $brandProducts->fetchAll();
+                            $productCount = count($brandProducts);
+                            $shouldLoop = $productCount > 4; // Only loop if more than 4 items
                             ?>
                             <div class="product_slider carousel_slider owl-carousel owl-theme nav_style1" data-loop="<?php echo $shouldLoop ? 'true' : 'false'; ?>" data-dots="false" data-nav="true" data-margin="20" data-responsive='{"0":{"items": "1"}, "481":{"items": "2"}, "768":{"items": "3"}, "991":{"items": "4"}}'>
-                                <?php if (!empty($categoriesByBrand[$brand['id']])): ?>
-                                    <?php foreach ($categoriesByBrand[$brand['id']] as $index => $category): ?>
-                                    <?php $categoryUrl = SITE_URL . '/' . ($category['brand_slug'] ?? $brand['slug']) . '/' . $category['slug']; ?>
+                                <?php if (!empty($brandProducts)): ?>
+                                    <?php foreach ($brandProducts as $product): ?>
+                                    <?php $productUrl = SITE_URL . '/' . $brand['slug'] . '/' . $product['slug']; ?>
                                     <div class="item">
-                                        <a href="<?php echo $categoryUrl; ?>" class="product_wrap_link" style="display: block; text-decoration: none; color: inherit;">
+                                        <a href="<?php echo $productUrl; ?>" class="product_wrap_link" style="display: block; text-decoration: none; color: inherit;">
                                             <div class="product_wrap">
                                                 <div class="product_img">
-                                                    <?php if (!empty($category['image'])): ?>
-                                                        <img src="<?php echo UPLOAD_URL . '/' . $category['image']; ?>" alt="<?php echo htmlspecialchars($category['name']); ?>">
+                                                    <?php if (!empty($product['image'])): ?>
+                                                        <img src="<?php echo UPLOAD_URL . '/' . $product['image']; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                                    <?php else: ?>
+                                                        <img src="assets/images/product_img1.jpg" alt="<?php echo htmlspecialchars($product['name']); ?>">
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="product_info">
-                                                    <h6 class="product_title"><?php echo htmlspecialchars($category['name']); ?></h6>
-                                                    <?php if (!empty($category['description'])): ?>
+                                                    <h6 class="product_title"><?php echo htmlspecialchars($product['name']); ?></h6>
+                                                    <?php if (!empty($product['short_description'])): ?>
                                                     <div class="pr_desc">
-                                                        <p><?php echo htmlspecialchars(substr($category['description'], 0, 100)); ?><?php echo strlen($category['description']) > 100 ? '...' : ''; ?></p>
+                                                        <p><?php echo htmlspecialchars(substr($product['short_description'], 0, 100)); ?><?php echo strlen($product['short_description']) > 100 ? '...' : ''; ?></p>
                                                     </div>
                                                     <?php endif; ?>
-                                                    <div class="product_price">
-                                                        <span class="price"><?php 
-                                                        // Explicitly get the count
-                                                        $prodCount = isset($category['product_count']) ? (int)$category['product_count'] : 0;
-                                                        // Debug output (temporary)
-                                                        if ($prodCount == 0 && isset($category['id'])) {
-                                                            // Double-check the count
-                                                            $verifyQuery = $db->prepare("SELECT COUNT(*) FROM products WHERE category_id = ? AND status = 'active'");
-                                                            $verifyQuery->execute([(int)$category['id']]);
-                                                            $verifyCount = (int)$verifyQuery->fetchColumn();
-                                                            $prodCount = $verifyCount; // Use verified count
-                                                        }
-                                                        echo $prodCount; 
-                                                        ?> Products</span>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </a>
@@ -246,7 +189,7 @@ require __DIR__ . '/includes/public/header.php';
                                     <div class="item">
                                         <div class="product_wrap">
                                             <div class="product_info text-center">
-                                                <p>No categories available for <?php echo htmlspecialchars($brand['name']); ?></p>
+                                                <p>No products available for <?php echo htmlspecialchars($brand['name']); ?></p>
                                             </div>
                                         </div>
                                     </div>
@@ -303,7 +246,7 @@ require __DIR__ . '/includes/public/header.php';
                     <div class="product_slider carousel_slider owl-carousel owl-theme nav_style1" data-loop="<?php echo $shouldLoop ? 'true' : 'false'; ?>" data-dots="false" data-nav="true" data-margin="20" data-responsive='{"0":{"items": "1"}, "481":{"items": "2"}, "768":{"items": "3"}, "991":{"items": "4"}}'>
                         <?php foreach ($featuredProducts as $index => $product): ?>
                             <?php 
-                            $productUrl = SITE_URL . '/' . htmlspecialchars($product['brand_slug']) . '/' . htmlspecialchars($product['category_slug']) . '/' . htmlspecialchars($product['slug']);
+                            $productUrl = SITE_URL . '/' . htmlspecialchars($product['brand_slug']) . '/' . htmlspecialchars($product['slug']);
                             $gallery = !empty($product['gallery']) ? json_decode($product['gallery'], true) : [];
                             $hoverImage = !empty($gallery) ? $gallery[0] : $product['image'];
                             ?>
@@ -334,7 +277,7 @@ require __DIR__ . '/includes/public/header.php';
                                                 </div>
                                             <?php endif; ?>
                                             <div class="product_price">
-                                                <span class="price"><?php echo htmlspecialchars($product['brand_name']); ?> - <?php echo htmlspecialchars($product['category_name']); ?></span>
+                                                <span class="price"><?php echo htmlspecialchars($product['brand_name']); ?></span>
                                             </div>
                                         </div>
                                     </div>

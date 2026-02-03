@@ -15,18 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = sanitize($_POST['message'] ?? '');
     $product_id = intval($_POST['product_id'] ?? 0);
     $brand_id = intval($_POST['brand_id'] ?? 0);
-    $category_id = intval($_POST['category_id'] ?? 0);
-    
-    // If category_id provided, get its brand_id
-    if ($category_id && !$brand_id) {
-        $catStmt = $db->prepare("SELECT brand_id FROM product_categories WHERE id = ?");
-        $catStmt->execute([$category_id]);
-        $catData = $catStmt->fetch();
-        if ($catData) {
-            $brand_id = $catData['brand_id'];
-        }
-    }
-    
     // If product_id provided, get its brand_id if not already set
     if ($product_id && !$brand_id) {
         $prodStmt = $db->prepare("SELECT brand_id FROM products WHERE id = ?");
@@ -56,13 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get product/brand/category info if provided
+// Get product/brand info if provided
 $product = null;
 $brand = null;
-$category = null;
 $product_id = intval($_GET['product_id'] ?? 0);
 $brand_id = intval($_GET['brand_id'] ?? 0);
-$category_id = intval($_GET['category_id'] ?? 0);
 
 if ($product_id) {
     $stmt = $db->prepare("SELECT * FROM products WHERE id = ?");
@@ -71,16 +57,6 @@ if ($product_id) {
     // If product found, get its brand_id for the enquiry
     if ($product && !$brand_id) {
         $brand_id = $product['brand_id'];
-    }
-}
-
-if ($category_id) {
-    $stmt = $db->prepare("SELECT * FROM product_categories WHERE id = ?");
-    $stmt->execute([$category_id]);
-    $category = $stmt->fetch();
-    // If category found, get its brand_id for the enquiry
-    if ($category && !$brand_id) {
-        $brand_id = $category['brand_id'];
     }
 }
 
@@ -193,12 +169,9 @@ renderBreadcrumb($pageSEO['h1_text'], [
              <input type="hidden" id="csrf_token" name="csrf_token">
              <input type="hidden" id="captcha_id" name="captcha_id">
              
-             <!-- Product/Brand/Category IDs for database sync -->
+             <!-- Product/Brand IDs for database sync -->
              <?php if ($product_id): ?>
                  <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
-             <?php endif; ?>
-             <?php if ($category_id): ?>
-                 <input type="hidden" name="category_id" value="<?php echo $category_id; ?>">
              <?php endif; ?>
              <?php if ($brand_id): ?>
                  <input type="hidden" name="brand_id" value="<?php echo $brand_id; ?>">

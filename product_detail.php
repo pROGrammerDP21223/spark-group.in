@@ -1,10 +1,11 @@
 <?php
 /**
  * Product Detail Page (with city support) - Aments Design
- * Handles: /brand/category/product or /brand/category/product-city
+ * Handles: /brand/product or /brand/product-city
  */
 
-if (empty($brand) || empty($category) || empty($slug)) {
+// Expect: $brand (brand slug), $slug (product slug), optional $city
+if (empty($brand) || empty($slug)) {
     redirect(SITE_URL . '/404');
 }
 
@@ -18,8 +19,23 @@ if (!empty($city) && empty($cityData)) {
     }
 }
 
-// If city is not set but slug contains hyphen, try to extract city from slug
-if (empty($city) && strpos($slug, '-') !== false) {
+// Get brand first
+$brandStmt = $db->prepare("SELECT * FROM brands WHERE slug = ? AND status = 'active'");
+$brandStmt->execute([$brand]);
+$brandData = $brandStmt->fetch();
+
+if (!$brandData) {
+    redirect(SITE_URL . '/404');
+}
+
+// First, try to find product with the full slug as-is
+$productStmt = $db->prepare("SELECT * FROM products WHERE slug = ? AND brand_id = ? AND status = 'active'");
+$productStmt->execute([$slug, $brandData['id']]);
+$product = $productStmt->fetch();
+
+// If product not found and slug contains hyphen, try to extract city from slug
+// Only do this if product doesn't exist with full slug
+if (!$product && empty($city) && strpos($slug, '-') !== false) {
     $parts = explode('-', $slug);
     $lastPart = end($parts);
     
@@ -31,55 +47,22 @@ if (empty($city) && strpos($slug, '-') !== false) {
     if ($cityCheckResult) {
         // Last part is a city, so first part(s) is the product slug
         array_pop($parts); // Remove city part
-        $slug = implode('-', $parts); // Rejoin remaining parts as product slug
-        $city = $lastPart;
-        $cityData = $cityCheckResult;
-        $cityId = $cityData['id'];
+        $newSlug = implode('-', $parts); // Rejoin remaining parts as product slug
+        
+        // Try to find product with the new slug (without city)
+        $productStmt = $db->prepare("SELECT * FROM products WHERE slug = ? AND brand_id = ? AND status = 'active'");
+        $productStmt->execute([$newSlug, $brandData['id']]);
+        $product = $productStmt->fetch();
+        
+        // Only use city extraction if we found a product with the new slug
+        if ($product) {
+            $slug = $newSlug;
+            $city = $lastPart;
+            $cityData = $cityCheckResult;
+            $cityId = $cityData['id'];
+        }
     }
 }
-
-// Also check if category slug contains city (for URLs like /brand/category-city/product)
-if (empty($city) && strpos($category, '-') !== false) {
-    $catParts = explode('-', $category);
-    $lastCatPart = end($catParts);
-    
-    // Check if last part is a valid city slug
-    $cityCheck = $db->prepare("SELECT * FROM cities WHERE slug = ? AND status = 'active'");
-    $cityCheck->execute([$lastCatPart]);
-    $cityCheckResult = $cityCheck->fetch();
-    
-    if ($cityCheckResult) {
-        // Last part is a city, so first part(s) is the category slug
-        array_pop($catParts); // Remove city part
-        $category = implode('-', $catParts); // Rejoin remaining parts as category slug
-        $city = $lastCatPart;
-        $cityData = $cityCheckResult;
-        $cityId = $cityData['id'];
-    }
-}
-
-// Get brand
-$brandStmt = $db->prepare("SELECT * FROM brands WHERE slug = ? AND status = 'active'");
-$brandStmt->execute([$brand]);
-$brandData = $brandStmt->fetch();
-
-if (!$brandData) {
-    redirect(SITE_URL . '/404');
-}
-
-// Get category
-$categoryStmt = $db->prepare("SELECT * FROM product_categories WHERE slug = ? AND brand_id = ? AND status = 'active'");
-$categoryStmt->execute([$category, $brandData['id']]);
-$categoryData = $categoryStmt->fetch();
-
-if (!$categoryData) {
-    redirect(SITE_URL . '/404');
-}
-
-// Get product
-$productStmt = $db->prepare("SELECT * FROM products WHERE slug = ? AND brand_id = ? AND category_id = ? AND status = 'active'");
-$productStmt->execute([$slug, $brandData['id'], $categoryData['id']]);
-$product = $productStmt->fetch();
 
 if (!$product) {
     redirect(SITE_URL . '/404');
@@ -105,9 +88,9 @@ if (empty($seoData['meta_title'])) {
     $seoData['meta_title'] .= ' - ' . SITE_NAME;
 }
 
-// Build canonical URL
+// Build canonical URL (no category segment)
 if (empty($seoData['canonical_url'])) {
-    $seoData['canonical_url'] = SITE_URL . '/' . $brandData['slug'] . '/' . $categoryData['slug'] . '/' . $product['slug'];
+    $seoData['canonical_url'] = SITE_URL . '/' . $brandData['slug'] . '/' . $product['slug'];
     if ($cityData) {
         $seoData['canonical_url'] .= '-' . $cityData['slug'];
     }
@@ -128,11 +111,9 @@ if (!empty($product['gallery'])) {
 }
 
 // Get related products for this brand (excluding current product)
-$relatedStmt = $db->prepare("SELECT p.*, c.name AS category_name, c.slug AS category_slug
-                             FROM products p
-                             LEFT JOIN product_categories c ON p.category_id = c.id
-                             WHERE p.brand_id = ? AND p.status = 'active' AND p.id != ?
-                             ORDER BY p.sort_order ASC, p.name ASC
+$relatedStmt = $db->prepare("SELECT * FROM products
+                             WHERE brand_id = ? AND status = 'active' AND id != ?
+                             ORDER BY sort_order ASC, name ASC
                              LIMIT 12");
 $relatedStmt->execute([$brandData['id'], $product['id']]);
 $relatedProducts = $relatedStmt->fetchAll();
@@ -152,12 +133,10 @@ require __DIR__ . '/includes/public/header.php';
 <?php
 require_once __DIR__ . '/includes/public/breadcrumb.php';
 
-// Store product/brand/category data in safe variables before including header
+// Store product/brand data in safe variables before including header
 $currentProductName = $product['name'];
 $currentBrandName = $brandData['name'];
 $currentBrandSlug = $brandData['slug'];
-$currentCategoryName = $categoryData['name'];
-$currentCategorySlug = $categoryData['slug'];
 
 // Use SEO H1 text for breadcrumb if available, otherwise use product name
 $breadcrumbTitle = !empty($seoData['h1_text']) ? $seoData['h1_text'] : $currentProductName;
@@ -165,10 +144,9 @@ if ($cityData && stripos($breadcrumbTitle, $cityData['name']) === false) {
     $breadcrumbTitle .= ' Authorised Dealer Distributor and Supplier in ' . $cityData['name'];
 }
 
-// Render breadcrumb
+// Render breadcrumb (brand > product)
 renderBreadcrumb($breadcrumbTitle, [
     ['text' => $currentBrandName, 'url' => SITE_URL . '/' . $currentBrandSlug],
-    ['text' => $currentCategoryName, 'url' => SITE_URL . '/' . $currentBrandSlug . '/' . $currentCategorySlug],
     ['text' => $breadcrumbTitle]
 ]);
 ?>
@@ -236,7 +214,6 @@ renderBreadcrumb($breadcrumbTitle, [
                         <?php if (!empty($product['sku'])): ?>
                         <li>SKU: <a href="#"><?php echo htmlspecialchars($product['sku']); ?></a></li>
                         <?php endif; ?>
-                        <li>Category: <a href="<?php echo SITE_URL . '/' . htmlspecialchars($brandData['slug']) . '/' . htmlspecialchars($categoryData['slug']); ?>"><?php echo htmlspecialchars($categoryData['name']); ?></a></li>
                         <li>Brand: <a href="<?php echo SITE_URL . '/' . htmlspecialchars($brandData['slug']); ?>"><?php echo htmlspecialchars($brandData['name']); ?></a></li>
                     </ul>
                     
@@ -244,7 +221,7 @@ renderBreadcrumb($breadcrumbTitle, [
                         <span>Share:</span>
                         <ul class="social_icons">
                             <?php
-                            $shareUrl = urlencode($seoData['canonical_url'] ?? SITE_URL . '/' . $brandData['slug'] . '/' . $categoryData['slug'] . '/' . $product['slug']);
+                            $shareUrl = urlencode($seoData['canonical_url'] ?? SITE_URL . '/' . $brandData['slug'] . '/' . $product['slug']);
                             $shareTitle = urlencode($product['name']);
                             ?>
                             <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $shareUrl; ?>" target="_blank"><i class="ion-social-facebook"></i></a></li>
@@ -313,7 +290,7 @@ renderBreadcrumb($breadcrumbTitle, [
             	<div class="releted_product_slider carousel_slider owl-carousel owl-theme" data-margin="20" data-responsive='{"0":{"items": "1"}, "481":{"items": "2"}, "768":{"items": "3"}, "1199":{"items": "4"}}'>
                 	<?php foreach ($relatedProducts as $rel): ?>
                 	<?php
-                	$relUrl = SITE_URL . '/' . htmlspecialchars($brandData['slug']) . '/' . htmlspecialchars($rel['category_slug']) . '/' . htmlspecialchars($rel['slug']);
+                	$relUrl = SITE_URL . '/' . htmlspecialchars($brandData['slug']) . '/' . htmlspecialchars($rel['slug']);
                 	$relImage = !empty($rel['image']) ? UPLOAD_URL . '/' . $rel['image'] : SITE_URL . '/assets/images/product_img1.jpg';
                 	?>
                 	<div class="item">
@@ -324,11 +301,6 @@ renderBreadcrumb($breadcrumbTitle, [
                                 </div>
                                 <div class="product_info">
                                     <h6 class="product_title"><?php echo htmlspecialchars($rel['name']); ?></h6>
-                                    <?php if (!empty($rel['category_name'])): ?>
-                                    <div class="product_price">
-                                        <span class="price"><?php echo htmlspecialchars($rel['category_name']); ?></span>
-                                    </div>
-                                    <?php endif; ?>
                                     <?php if ($rel['short_description']): ?>
                                     <div class="pr_desc">
                                         <p><?php echo htmlspecialchars(mb_substr($rel['short_description'], 0, 100)) . (mb_strlen($rel['short_description']) > 100 ? '...' : ''); ?></p>

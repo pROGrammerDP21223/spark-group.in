@@ -13,9 +13,6 @@ class AppContext
     /** @var array<int,array> */
     public array $brands = [];
 
-    /** @var array<int,array<int,array>> brand_id => categories[] */
-    public array $categoriesByBrand = [];
-
     /** @var array<string,array<int,array>> type => records[] */
     public array $contactMap = [];
 
@@ -26,7 +23,6 @@ class AppContext
     {
         $this->db = $db;
         $this->loadBrands();
-        $this->loadCategoriesByBrand();
         $this->loadContactDetails();
     }
 
@@ -39,21 +35,6 @@ class AppContext
         );
         $this->brands = $stmt->fetchAll();
         $this->allBrands = $this->brands;
-    }
-
-    protected function loadCategoriesByBrand(): void
-    {
-        $this->categoriesByBrand = [];
-
-        foreach ($this->brands as $brand) {
-            $stmt = $this->db->prepare(
-                "SELECT * FROM product_categories
-                 WHERE brand_id = ? AND status = 'active'
-                 ORDER BY sort_order ASC, name ASC"
-            );
-            $stmt->execute([$brand['id']]);
-            $this->categoriesByBrand[$brand['id']] = $stmt->fetchAll();
-        }
     }
 
     protected function loadContactDetails(): void

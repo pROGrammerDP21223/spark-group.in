@@ -9,20 +9,19 @@ $searchQuery = htmlspecialchars($searchQuery, ENT_QUOTES, 'UTF-8');
 // Set SEO data
 $pageSEO = [
     'meta_title' => !empty($searchQuery) ? 'Search Results for "' . $searchQuery . '" - ' . SITE_NAME : 'Search - ' . SITE_NAME,
-    'meta_description' => !empty($searchQuery) ? 'Search results for: ' . $searchQuery : 'Search our products and categories',
+    'meta_description' => !empty($searchQuery) ? 'Search results for: ' . $searchQuery : 'Search our products and brands',
     'meta_keywords' => '',
     'canonical_url' => SITE_URL . '/search' . (!empty($searchQuery) ? '?q=' . urlencode($searchQuery) : ''),
     'og_title' => 'Search Results',
-    'og_description' => !empty($searchQuery) ? 'Search results for: ' . $searchQuery : 'Search our products and categories',
+    'og_description' => !empty($searchQuery) ? 'Search results for: ' . $searchQuery : 'Search our products and brands',
     'og_image' => SITE_URL . '/assets/images/logo_light.png',
     'h1_text' => !empty($searchQuery) ? 'Search Results for "' . $searchQuery . '"' : 'Search',
     'h2_text' => '',
     'seo_head' => ''
 ];
 
-// Search products and categories
+// Search products and brands
 $products = [];
-$categories = [];
 $brands = [];
 
 if (!empty($searchQuery)) {
@@ -33,12 +32,9 @@ if (!empty($searchQuery)) {
     // Search products - only match product name
     $productStmt = $db->prepare("
         SELECT p.*, 
-               pc.name as category_name, 
-               pc.slug as category_slug,
                b.name as brand_name,
                b.slug as brand_slug
         FROM products p
-        LEFT JOIN product_categories pc ON p.category_id = pc.id
         LEFT JOIN brands b ON p.brand_id = b.id
         WHERE p.status = 'active' 
         AND p.name LIKE ?
@@ -46,20 +42,6 @@ if (!empty($searchQuery)) {
     ");
     $productStmt->execute([$searchTerm]);
     $products = $productStmt->fetchAll();
-    
-    // Search categories - only match category name
-    $categoryStmt = $db->prepare("
-        SELECT pc.*, 
-               b.name as brand_name,
-               b.slug as brand_slug
-        FROM product_categories pc
-        LEFT JOIN brands b ON pc.brand_id = b.id
-        WHERE pc.status = 'active' 
-        AND pc.name LIKE ?
-        ORDER BY pc.name ASC
-    ");
-    $categoryStmt->execute([$searchTerm]);
-    $categories = $categoryStmt->fetchAll();
     
     // Search brands - only match brand name (case-insensitive, exact substring match)
     $brandStmt = $db->prepare("
@@ -105,9 +87,9 @@ renderBreadcrumb($pageSEO['h1_text'], [
             <div class="col-12">
                 <?php if (empty($searchQuery)): ?>
                     <div class="text-center py-5">
-                        <p class="text-muted">Please enter a search term to find products, categories, or brands.</p>
+                        <p class="text-muted">Please enter a search term to find products or brands.</p>
                     </div>
-                <?php elseif (empty($products) && empty($categories) && empty($brands)): ?>
+                <?php elseif (empty($products) && empty($brands)): ?>
                     <div class="text-center py-5">
                         <p class="text-muted">No results found for "<strong><?php echo $searchQuery; ?></strong>".</p>
                         <p class="text-muted">Try searching with different keywords.</p>
@@ -123,7 +105,7 @@ renderBreadcrumb($pageSEO['h1_text'], [
                     }
                     $brands = $filteredBrands;
                     
-                    $totalResults = count($products) + count($categories) + count($brands);
+                    $totalResults = count($products) + count($brands);
                     ?>
                     <p class="mb-4">Found <strong><?php echo $totalResults; ?></strong> result(s) for "<strong><?php echo $searchQuery; ?></strong>"</p>
 
@@ -162,46 +144,6 @@ renderBreadcrumb($pageSEO['h1_text'], [
                         </div>
                     <?php endif; ?>
 
-                    <!-- Categories Results -->
-                    <?php if (!empty($categories)): ?>
-                        <div class="mb-5">
-                            <h3 class="mb-4">Categories (<?php echo count($categories); ?>)</h3>
-                            <div class="row shop_container">
-                                <?php foreach ($categories as $category): ?>
-                                    <?php
-                                    $categoryUrl = SITE_URL . '/' . $category['brand_slug'] . '/' . $category['slug'];
-                                    ?>
-                                    <div class="col-lg-3 col-md-4 col-6 grid_item">
-                                        <a href="<?php echo $categoryUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
-                                            <div class="product">
-                                                <div class="product_img">
-                                                    <?php if (!empty($category['image'])): ?>
-                                                        <img src="<?php echo UPLOAD_URL . '/' . htmlspecialchars($category['image']); ?>" alt="<?php echo htmlspecialchars($category['name']); ?>">
-                                                    <?php else: ?>
-                                                        <img src="assets/images/product_img1.jpg" alt="<?php echo htmlspecialchars($category['name']); ?>">
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="product_info">
-                                                    <h6 class="product_title"><?php echo htmlspecialchars($category['name']); ?></h6>
-                                                    <?php if (!empty($category['brand_name'])): ?>
-                                                        <div class="pr_desc">
-                                                            <p><small>Brand: <?php echo htmlspecialchars($category['brand_name']); ?></small></p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if (!empty($category['description'])): ?>
-                                                        <div class="pr_desc">
-                                                            <p><?php echo htmlspecialchars(substr($category['description'], 0, 100)); ?><?php echo strlen($category['description']) > 100 ? '...' : ''; ?></p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
                     <!-- Products Results -->
                     <?php if (!empty($products)): ?>
                         <div class="mb-5">
@@ -209,7 +151,7 @@ renderBreadcrumb($pageSEO['h1_text'], [
                             <div class="row shop_container">
                                 <?php foreach ($products as $product): ?>
                                     <?php
-                                    $productUrl = SITE_URL . '/' . $product['brand_slug'] . '/' . $product['category_slug'] . '/' . $product['slug'];
+                                    $productUrl = SITE_URL . '/' . $product['brand_slug'] . '/' . $product['slug'];
                                     $productImage = !empty($product['image']) ? UPLOAD_URL . '/' . $product['image'] : SITE_URL . '/assets/images/product_img1.jpg';
                                     ?>
                                     <div class="col-lg-3 col-md-4 col-6 grid_item">
@@ -220,9 +162,9 @@ renderBreadcrumb($pageSEO['h1_text'], [
                                                 </div>
                                                 <div class="product_info">
                                                     <h6 class="product_title"><?php echo htmlspecialchars($product['name']); ?></h6>
-                                                    <?php if (!empty($product['category_name'])): ?>
+                                                    <?php if (!empty($product['brand_name'])): ?>
                                                         <div class="pr_desc">
-                                                            <p><small><?php echo htmlspecialchars($product['category_name']); ?></small></p>
+                                                            <p><small>Brand: <?php echo htmlspecialchars($product['brand_name']); ?></small></p>
                                                         </div>
                                                     <?php endif; ?>
                                                     <?php if (!empty($product['short_description'])): ?>

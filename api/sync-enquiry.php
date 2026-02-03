@@ -49,20 +49,9 @@ if (!empty($data['address'])) {
     }
 }
 
-// Get product/brand/category IDs from URL parameters or data
+// Get product/brand IDs from URL parameters or data
 $product_id = intval($data['product_id'] ?? $_GET['product_id'] ?? 0);
 $brand_id = intval($data['brand_id'] ?? $_GET['brand_id'] ?? 0);
-$category_id = intval($data['category_id'] ?? $_GET['category_id'] ?? 0);
-
-// If category_id provided, get its brand_id
-if ($category_id && !$brand_id) {
-    $catStmt = $db->prepare("SELECT brand_id FROM product_categories WHERE id = ?");
-    $catStmt->execute([$category_id]);
-    $catData = $catStmt->fetch();
-    if ($catData) {
-        $brand_id = $catData['brand_id'];
-    }
-}
 
 // If product_id provided, get its brand_id if not already set
 if ($product_id && !$brand_id) {

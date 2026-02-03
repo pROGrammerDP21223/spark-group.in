@@ -30,24 +30,12 @@ if (isset($pageSEO) && is_array($pageSEO)) {
 // Prefer using AppContext (created in index.php) to avoid duplicate queries.
 if (isset($app) && $app instanceof AppContext) {
     $brands = $app->brands;
-    $categoriesByBrand = $app->categoriesByBrand;
     $contactMap = $app->contactMap;
 } else {
     // Fallback for cases where header is used without AppContext
     $brands = $db->query(
         "SELECT * FROM brands WHERE status = 'active' ORDER BY sort_order ASC, name ASC"
     )->fetchAll();
-
-    $categoriesByBrand = [];
-    foreach ($brands as $brandRow) {
-        $brandCategories = $db->prepare(
-            "SELECT * FROM product_categories
-             WHERE brand_id = ? AND status = 'active'
-             ORDER BY sort_order ASC, name ASC LIMIT 10"
-        );
-        $brandCategories->execute([$brandRow['id']]);
-        $categoriesByBrand[$brandRow['id']] = $brandCategories->fetchAll();
-    }
 
     $contactDetails = $db->query(
         "SELECT * FROM contact_details WHERE status = 'active' ORDER BY sort_order ASC"
@@ -56,6 +44,20 @@ if (isset($app) && $app instanceof AppContext) {
     foreach ($contactDetails as $contact) {
         $contactMap[$contact['type']][] = $contact;
     }
+}
+
+// Load products for each brand for navigation menu
+$brandsWithProducts = [];
+foreach ($brands as $brand) {
+    $products = $db->prepare(
+        "SELECT id, name, slug FROM products 
+         WHERE brand_id = ? AND status = 'active' 
+         ORDER BY sort_order ASC, name ASC 
+         LIMIT 10"
+    );
+    $products->execute([$brand['id']]);
+    $brand['products'] = $products->fetchAll();
+    $brandsWithProducts[] = $brand;
 }
 
 // Get phone/email for header
@@ -264,23 +266,23 @@ $headerEmail = !empty($contactMap['email']) ? $contactMap['email'][0]['value'] :
                                 <li><a class="nav-link nav_item <?php echo ($type === 'home' && $page === 'home') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>">Home</a></li>
                                 <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'about') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/about-us">About Us</a></li>
                                 <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'certifications') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/certifications">Certifications</a></li>
-                                <?php if (!empty($brands)): ?>
+                                <?php if (!empty($brandsWithProducts)): ?>
                                 <li class="dropdown <?php echo ($type === 'brand') ? 'active' : ''; ?>">
                                     <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">Brands</a>
                                     <div class="dropdown-menu">
                                         <ul>
-                                            <?php foreach ($brands as $navBrand): ?>
+                                            <?php foreach ($brandsWithProducts as $navBrand): ?>
                                             <li>
-                                                <a class="dropdown-item <?php echo !empty($categoriesByBrand[$navBrand['id']]) ? 'dropdown-toggler' : ''; ?>" href="<?php echo SITE_URL . '/' . $navBrand['slug']; ?>">
+                                                <a class="dropdown-item  <?php if (!empty($navBrand['products'])): ?> dropdown-toggler  <?php endif; ?>" href="<?php echo SITE_URL . '/' . $navBrand['slug']; ?>">
                                                     <?php echo htmlspecialchars($navBrand['name']); ?>
                                                 </a>
-                                                <?php if (!empty($categoriesByBrand[$navBrand['id']])): ?>
+                                                <?php if (!empty($navBrand['products'])): ?>
                                                 <div class="dropdown-menu">
                                                     <ul>
-                                                        <?php foreach ($categoriesByBrand[$navBrand['id']] as $navCategory): ?>
+                                                        <?php foreach ($navBrand['products'] as $product): ?>
                                                         <li>
-                                                            <a class="dropdown-item nav-link nav_item" href="<?php echo SITE_URL . '/' . $navBrand['slug'] . '/' . $navCategory['slug']; ?>">
-                                                                <?php echo htmlspecialchars($navCategory['name']); ?>
+                                                            <a class="dropdown-item nav-link nav_item" href="<?php echo SITE_URL . '/' . $navBrand['slug'] . '/' . $product['slug']; ?>">
+                                                                <?php echo htmlspecialchars($product['name']); ?>
                                                             </a>
                                                         </li>
                                                         <?php endforeach; ?>
@@ -313,3 +315,84 @@ $headerEmail = !empty($contactMap['email']) ? $contactMap['email'][0]['value'] :
     </div>
 </header>
 <!-- END HEADER -->
+
+<style>
+/* Enable hover dropdown for Brands menu on desktop */
+@media (min-width: 992px) {
+    .navbar-nav .dropdown .dropdown-menu {
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        margin-top: 0;
+    }
+    
+    .navbar-nav .dropdown:hover > .dropdown-menu,
+    .navbar-nav .dropdown .dropdown-menu:hover {
+        display: block !important;
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Nested dropdown on hover */
+    .navbar-nav .dropdown-menu > ul > li {
+        position: relative;
+    }
+    
+    .navbar-nav .dropdown-menu > ul > li .dropdown-menu {
+        display: none;
+        position: absolute;
+        left: 100%;
+        top: 0;
+        margin: 0;
+        border: 0;
+        min-width: 12rem;
+        box-shadow: 10px 16px 49px 0px rgba(38,42,46,0.05);
+        border-radius: 0;
+        padding: 5px 0;
+    }
+    
+    .navbar-nav .dropdown-menu > ul > li:hover > .dropdown-menu {
+        display: block !important;
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* Dropdown menu styling */
+.navbar-nav .dropdown .dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-nav .dropdown .dropdown-menu > ul > li {
+    position: relative;
+}
+
+.navbar-nav .dropdown .dropdown-menu .dropdown-toggler {
+    position: relative;
+}
+
+.navbar-nav .dropdown .dropdown-menu .dropdown-toggler::after {
+    content: "\f105";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.navbar-nav .dropdown .dropdown-menu .dropdown-item {
+    padding: 8px 15px;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+}
+
+.navbar-nav .dropdown .dropdown-menu .dropdown-item:hover {
+    color: #FF324D;
+    background: transparent;
+}
+</style>

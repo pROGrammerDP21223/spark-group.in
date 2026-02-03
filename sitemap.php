@@ -61,40 +61,16 @@ foreach ($brands as $brand) {
     }
 }
 
-// Categories (base and city-wise)
-$categories = $db->query("SELECT c.*, b.slug as brand_slug FROM product_categories c 
-                          LEFT JOIN brands b ON c.brand_id = b.id 
-                          WHERE c.status = 'active' AND b.status = 'active'")->fetchAll();
-
-foreach ($categories as $category) {
-    // Base category page
-    echo "  <url>\n";
-    echo "    <loc>" . htmlspecialchars(SITE_URL . '/' . $category['brand_slug'] . '/' . $category['slug']) . "</loc>\n";
-    echo "    <changefreq>weekly</changefreq>\n";
-    echo "    <priority>0.8</priority>\n";
-    echo "  </url>\n";
-    
-    // City-wise category pages
-    foreach ($cities as $city) {
-        echo "  <url>\n";
-        echo "    <loc>" . htmlspecialchars(SITE_URL . '/' . $category['brand_slug'] . '/' . $category['slug'] . '-' . $city['slug']) . "</loc>\n";
-        echo "    <changefreq>weekly</changefreq>\n";
-        echo "    <priority>0.8</priority>\n";
-        echo "  </url>\n";
-    }
-}
-
-// Products (base and city-wise)
-$products = $db->query("SELECT p.*, b.slug as brand_slug, c.slug as category_slug 
+// Products (base and city-wise) – directly under brands (no categories)
+$products = $db->query("SELECT p.*, b.slug as brand_slug 
                         FROM products p 
                         LEFT JOIN brands b ON p.brand_id = b.id 
-                        LEFT JOIN product_categories c ON p.category_id = c.id 
-                        WHERE p.status = 'active' AND b.status = 'active' AND c.status = 'active'")->fetchAll();
+                        WHERE p.status = 'active' AND b.status = 'active'")->fetchAll();
 
 foreach ($products as $product) {
     // Base product page
     echo "  <url>\n";
-    echo "    <loc>" . htmlspecialchars(SITE_URL . '/' . $product['brand_slug'] . '/' . $product['category_slug'] . '/' . $product['slug']) . "</loc>\n";
+    echo "    <loc>" . htmlspecialchars(SITE_URL . '/' . $product['brand_slug'] . '/' . $product['slug']) . "</loc>\n";
     echo "    <changefreq>monthly</changefreq>\n";
     echo "    <priority>0.7</priority>\n";
     echo "  </url>\n";
@@ -102,7 +78,7 @@ foreach ($products as $product) {
     // City-wise product pages
     foreach ($cities as $city) {
         echo "  <url>\n";
-        echo "    <loc>" . htmlspecialchars(SITE_URL . '/' . $product['brand_slug'] . '/' . $product['category_slug'] . '/' . $product['slug'] . '-' . $city['slug']) . "</loc>\n";
+        echo "    <loc>" . htmlspecialchars(SITE_URL . '/' . $product['brand_slug'] . '/' . $product['slug'] . '-' . $city['slug']) . "</loc>\n";
         echo "    <changefreq>monthly</changefreq>\n";
         echo "    <priority>0.7</priority>\n";
         echo "  </url>\n";

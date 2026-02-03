@@ -13,20 +13,18 @@ $db = Database::getInstance()->getConnection();
 // Create shared application context (brands, categories, contact, etc.)
 $app = new AppContext($db);
 
-// Parse QUERY_STRING to ensure parameters set via fastcgi_param QUERY_STRING are available in $_GET
-// This is critical for nginx routing where QUERY_STRING is set directly
+// Parse QUERY_STRING to ensure parameters set via fastcgi_param / rewrite are available in $_GET
 if (!empty($_SERVER['QUERY_STRING'])) {
     parse_str($_SERVER['QUERY_STRING'], $parsed);
-    $_GET = array_merge($parsed, $_GET); // Merge parsed params first, then existing $_GET (so URL params override)
+    $_GET = array_merge($parsed, $_GET);
 }
 
-// Get page type and parameters
-$type = $_GET['type'] ?? 'home';
-$slug = $_GET['slug'] ?? '';
+// Get page type and parameters (categories removed – only brand & product)
+$type  = $_GET['type'] ?? 'home';
+$slug  = $_GET['slug'] ?? '';
 $brand = $_GET['brand'] ?? '';
-$category = $_GET['category'] ?? '';
-$city = $_GET['city'] ?? '';
-$page = $_GET['page'] ?? 'home';
+$city  = $_GET['city'] ?? '';
+$page  = $_GET['page'] ?? 'home';
 
 // Get city data if city slug is provided
 $cityData = null;
@@ -40,13 +38,9 @@ if (!empty($city)) {
     }
 }
 
-// Route to appropriate page
-// Check type first (for dynamic routes)
+// Route to appropriate page (categories removed)
 if ($type === 'brand') {
     require __DIR__ . '/brand_detail.php';
-    exit;
-} elseif ($type === 'category') {
-    require __DIR__ . '/category_detail.php';
     exit;
 } elseif ($type === 'product') {
     require __DIR__ . '/product_detail.php';

@@ -99,9 +99,6 @@ $currentAdmin = getCurrentAdmin();
             <li><a href="<?php echo SITE_URL; ?>/admin/brands.php" class="<?php echo (isset($currentPage) && $currentPage == 'brands') ? 'active' : ''; ?>">
                 <i class="bi bi-tags"></i> Brands
             </a></li>
-            <li><a href="<?php echo SITE_URL; ?>/admin/categories.php" class="<?php echo (isset($currentPage) && $currentPage == 'categories') ? 'active' : ''; ?>">
-                <i class="bi bi-grid"></i> Categories
-            </a></li>
             <li><a href="<?php echo SITE_URL; ?>/admin/products.php" class="<?php echo (isset($currentPage) && $currentPage == 'products') ? 'active' : ''; ?>">
                 <i class="bi bi-box-seam"></i> Products
             </a></li>

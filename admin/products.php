@@ -17,13 +17,12 @@ $db = Database::getInstance()->getConnection();
 $action = $_GET['action'] ?? 'list';
 $id = $_GET['id'] ?? null;
 
-// Get all brands and categories
+// Get all brands
 $brands = $db->query("SELECT * FROM brands WHERE status = 'active' ORDER BY name ASC")->fetchAll();
 
 // Handle form submissions (BEFORE including header to allow redirects)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $brand_id = intval($_POST['brand_id'] ?? 0);
-    $category_id = intval($_POST['category_id'] ?? 0);
     $name = sanitize($_POST['name'] ?? '');
     $slug = sanitize($_POST['slug'] ?? '');
     $description = $_POST['description'] ?? '';
@@ -32,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $featured = isset($_POST['featured']) ? 1 : 0;
     $sort_order = intval($_POST['sort_order'] ?? 0);
     
-    if (empty($name) || empty($slug) || !$brand_id || !$category_id) {
-        $error = 'Brand, category, name and slug are required';
+    if (empty($name) || empty($slug) || !$brand_id) {
+        $error = 'Brand, name and slug are required';
     } else {
         $slug = generateSlug($slug);
         
@@ -79,16 +78,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $oldGallery = array_merge($oldGallery, $gallery);
             }
             
-            $sql = "UPDATE products SET brand_id = ?, category_id = ?, name = ?, slug = ?, description = ?, short_description = ?, image = ?, gallery = ?, status = ?, featured = ?, sort_order = ? WHERE id = ?";
+            $sql = "UPDATE products SET brand_id = ?, name = ?, slug = ?, description = ?, short_description = ?, image = ?, gallery = ?, status = ?, featured = ?, sort_order = ? WHERE id = ?";
             $stmt = $db->prepare($sql);
-            $stmt->execute([$brand_id, $category_id, $name, $slug, $description, $short_description, $image, json_encode($oldGallery), $status, $featured, $sort_order, $id]);
+            $stmt->execute([$brand_id, $name, $slug, $description, $short_description, $image, json_encode($oldGallery), $status, $featured, $sort_order, $id]);
             
             redirect(SITE_URL . '/admin/products.php?action=edit&id=' . $id, 'Product updated successfully');
         } else {
             // Insert new
-            $sql = "INSERT INTO products (brand_id, category_id, name, slug, description, short_description, image, gallery, status, featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO products (brand_id, name, slug, description, short_description, image, gallery, status, featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $db->prepare($sql);
-            $stmt->execute([$brand_id, $category_id, $name, $slug, $description, $short_description, $image, json_encode($gallery), $status, $featured, $sort_order]);
+            $stmt->execute([$brand_id, $name, $slug, $description, $short_description, $image, json_encode($gallery), $status, $featured, $sort_order]);
             $newId = $db->lastInsertId();
             
             redirect(SITE_URL . '/admin/products.php?action=edit&id=' . $newId, 'Product added successfully');
@@ -237,17 +236,10 @@ require_once __DIR__ . '/includes/header.php';
 
 // Get product for editing
 $product = null;
-$categories = [];
 if ($id && $action === 'edit') {
     $stmt = $db->prepare("SELECT * FROM products WHERE id = ?");
     $stmt->execute([$id]);
     $product = $stmt->fetch();
-    
-    if ($product) {
-        $categories = $db->prepare("SELECT * FROM product_categories WHERE brand_id = ? AND status = 'active' ORDER BY name ASC");
-        $categories->execute([$product['brand_id']]);
-        $categories = $categories->fetchAll();
-    }
 }
 
 // List all products
@@ -258,10 +250,9 @@ if ($action === 'list' || empty($action)) {
     $total = $db->query("SELECT COUNT(*) FROM products")->fetchColumn();
     $totalPages = ceil($total / ITEMS_PER_PAGE);
     
-    $products = $db->query("SELECT p.*, b.name as brand_name, c.name as category_name 
+    $products = $db->query("SELECT p.*, b.name as brand_name 
                             FROM products p 
                             LEFT JOIN brands b ON p.brand_id = b.id 
-                            LEFT JOIN product_categories c ON p.category_id = c.id 
                             ORDER BY p.created_at DESC 
                             LIMIT " . ITEMS_PER_PAGE . " OFFSET $offset")->fetchAll();
     ?>
@@ -285,7 +276,6 @@ if ($action === 'list' || empty($action)) {
                         <th>Image</th>
                         <th>Name</th>
                         <th>Brand</th>
-                        <th>Category</th>
                         <th>Status</th>
                         <th>Featured</th>
                         <th>Actions</th>
@@ -307,7 +297,6 @@ if ($action === 'list' || empty($action)) {
                             </td>
                             <td><?php echo htmlspecialchars($p['name']); ?></td>
                             <td><?php echo htmlspecialchars($p['brand_name']); ?></td>
-                            <td><?php echo htmlspecialchars($p['category_name']); ?></td>
                             <td>
                                 <span class="badge bg-<?php echo $p['status'] == 'active' ? 'success' : 'secondary'; ?>">
                                     <?php echo ucfirst($p['status']); ?>
@@ -345,12 +334,6 @@ if ($action === 'list' || empty($action)) {
     </div>
     <?php
 } elseif ($action === 'add' || $action === 'edit') {
-    // Get categories based on selected brand
-    if ($product && $product['brand_id']) {
-        $categories = $db->prepare("SELECT * FROM product_categories WHERE brand_id = ? AND status = 'active' ORDER BY name ASC");
-        $categories->execute([$product['brand_id']]);
-        $categories = $categories->fetchAll();
-    }
     ?>
     <div class="content-card">
         <h5 class="mb-4"><?php echo $action === 'add' ? 'Add New Product' : 'Edit Product'; ?></h5>
@@ -362,33 +345,16 @@ if ($action === 'list' || empty($action)) {
         <form method="POST" enctype="multipart/form-data" id="productForm">
             <div class="row">
                 <div class="col-md-8">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Brand <span class="text-danger">*</span></label>
-                                <select class="form-select" name="brand_id" id="brand_id" required onchange="loadCategories(this.value)">
-                                    <option value="">Select Brand</option>
-                                    <?php foreach ($brands as $brand): ?>
-                                        <option value="<?php echo $brand['id']; ?>" <?php echo (($product['brand_id'] ?? '') == $brand['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($brand['name']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Category <span class="text-danger">*</span></label>
-                                <select class="form-select" name="category_id" id="category_id" required>
-                                    <option value="">Select Category</option>
-                                    <?php foreach ($categories as $cat): ?>
-                                        <option value="<?php echo $cat['id']; ?>" <?php echo (($product['category_id'] ?? '') == $cat['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($cat['name']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Brand <span class="text-danger">*</span></label>
+                        <select class="form-select" name="brand_id" id="brand_id" required>
+                            <option value="">Select Brand</option>
+                            <?php foreach ($brands as $brand): ?>
+                                <option value="<?php echo $brand['id']; ?>" <?php echo (($product['brand_id'] ?? '') == $brand['id']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($brand['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     
                     <div class="mb-3">
@@ -516,22 +482,7 @@ if ($action === 'list' || empty($action)) {
                 console.error(error);
             });
         
-        function loadCategories(brandId) {
-            if (!brandId) {
-                document.getElementById('category_id').innerHTML = '<option value="">Select Category</option>';
-                return;
-            }
-            
-            fetch('<?php echo SITE_URL; ?>/admin/ajax/get_categories.php?brand_id=' + brandId)
-                .then(response => response.json())
-                .then(data => {
-                    let html = '<option value="">Select Category</option>';
-                    data.forEach(cat => {
-                        html += '<option value="' + cat.id + '">' + cat.name + '</option>';
-                    });
-                    document.getElementById('category_id').innerHTML = html;
-                });
-        }
+        // Categories removed – no dependent selects needed
     </script>
     <?php
 } elseif ($action === 'specs' && $id) {

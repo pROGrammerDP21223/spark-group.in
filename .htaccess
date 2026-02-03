@@ -48,17 +48,10 @@ RewriteRule ^enquiry$ index.php?page=enquiry [L,QSA]
 RewriteRule ^search$ index.php?type=search [L,QSA]
 RewriteRule ^404$ index.php?page=404 [L,QSA]
 
-# Product Routes (with optional city) - MUST come first (most specific)
-# /bosch/power-tools/drill-machine-pune (with city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)-([a-z0-9-]+)$ index.php?type=product&brand=$1&category=$2&slug=$3&city=$4 [L,QSA]
-# /bosch/power-tools/drill-machine (without city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)$ index.php?type=product&brand=$1&category=$2&slug=$3 [L,QSA]
-
-# Category Routes (with optional city) - MUST come before brand routes
-# /bosch/power-tools-pune (with city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)-([a-z0-9-]+)$ index.php?type=category&brand=$1&slug=$2&city=$3 [L,QSA]
-# /bosch/power-tools (without city)
-RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)$ index.php?type=category&brand=$1&slug=$2 [L,QSA]
+# Product Routes - Pass full slug, let product_detail.php extract city
+# /bosch/pp-11-pune or /bosch/drill-machine-pune (with city)
+# /bosch/pp-11 or /bosch/drill-machine (without city)
+RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)$ index.php?type=product&brand=$1&slug=$2 [L,QSA]
 
 # Brand Routes (with optional city)
 # /bosch-pune (with city) - MUST come before single slug

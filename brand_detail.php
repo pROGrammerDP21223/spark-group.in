@@ -78,11 +78,6 @@ if (empty($seoData['canonical_url'])) {
     }
 }
 
-// Get categories for this brand
-$categories = $db->prepare("SELECT * FROM product_categories WHERE brand_id = ? AND status = 'active' ORDER BY sort_order ASC, name ASC");
-$categories->execute([$brand['id']]);
-$categories = $categories->fetchAll();
-
 // Get products for this brand (with pagination)
 $pageNum = max(1, intval($_GET['page'] ?? 1));
 $offset = ($pageNum - 1) * ITEMS_PER_PAGE;
@@ -92,11 +87,9 @@ $totalProducts->execute([$brand['id']]);
 $totalProducts = $totalProducts->fetchColumn();
 $totalPages = ceil($totalProducts / ITEMS_PER_PAGE);
 
-$products = $db->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug 
-                          FROM products p 
-                          LEFT JOIN product_categories c ON p.category_id = c.id 
-                          WHERE p.brand_id = ? AND p.status = 'active' 
-                          ORDER BY p.sort_order ASC, p.name ASC 
+$products = $db->prepare("SELECT * FROM products 
+                          WHERE brand_id = ? AND status = 'active' 
+                          ORDER BY sort_order ASC, name ASC 
                           LIMIT " . ITEMS_PER_PAGE . " OFFSET $offset");
 $products->execute([$brand['id']]);
 $products = $products->fetchAll();
@@ -149,38 +142,35 @@ renderBreadcrumb($breadcrumbTitle, [
                     </a>
                 </div>
 
-                <?php if (empty($categories)): ?>
-                    <p class="text-center text-muted py-5">No product categories found for this brand.</p>
+                <?php if (empty($products)): ?>
+                    <p class="text-center text-muted py-5">No products found for this brand.</p>
                 <?php else: ?>
                     <div class="row shop_container loadmore"
                          data-item="8"
                          data-item-show="4"
                          data-finish-message="No More Item to Show"
                          data-btn="Load More">
-                        <?php foreach ($categories as $index => $category): ?>
+                        <?php foreach ($products as $product): ?>
                             <?php
-                            $categoryUrl = SITE_URL . '/' . $currentBrandSlug . '/' . $category['slug'];
+                            $productUrl = SITE_URL . '/' . $currentBrandSlug . '/' . $product['slug'];
                             if ($cityData) {
-                                $categoryUrl .= '-' . $cityData['slug'];
+                                $productUrl .= '-' . $cityData['slug'];
                             }
+                            $image = !empty($product['image']) ? UPLOAD_URL . '/' . htmlspecialchars($product['image']) : 'assets/images/product_img1.jpg';
                             ?>
                             <div class="col-lg-3 col-md-4 col-6 grid_item">
-                                <a href="<?php echo $categoryUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
+                                <a href="<?php echo $productUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
                                     <div class="product">
                                         <div class="product_img">
-                                            <?php if (!empty($category['image'])): ?>
-                                                <img src="<?php echo UPLOAD_URL . '/' . htmlspecialchars($category['image']); ?>" alt="<?php echo htmlspecialchars($category['name']); ?>">
-                                            <?php else: ?>
-                                                <img src="assets/images/product_img1.jpg" alt="<?php echo htmlspecialchars($category['name']); ?>">
-                                            <?php endif; ?>
+                                            <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
                                         </div>
                                         <div class="product_info">
                                             <h6 class="product_title">
-                                                <?php echo htmlspecialchars($category['name']); ?>
+                                                <?php echo htmlspecialchars($product['name']); ?>
                                             </h6>
-                                            <?php if (!empty($category['description'])): ?>
+                                            <?php if (!empty($product['short_description'])): ?>
                                                 <div class="pr_desc">
-                                                    <p><?php echo htmlspecialchars(substr($category['description'], 0, 100)); ?><?php echo strlen($category['description']) > 100 ? '...' : ''; ?></p>
+                                                    <p><?php echo htmlspecialchars(substr($product['short_description'], 0, 100)); ?><?php echo strlen($product['short_description']) > 100 ? '...' : ''; ?></p>
                                                 </div>
                                             <?php endif; ?>
                                         </div>

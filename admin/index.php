@@ -8,7 +8,6 @@ $db = Database::getInstance()->getConnection();
 // Get statistics
 $stats = [
     'brands' => $db->query("SELECT COUNT(*) FROM brands WHERE status = 'active'")->fetchColumn(),
-    'categories' => $db->query("SELECT COUNT(*) FROM product_categories WHERE status = 'active'")->fetchColumn(),
     'products' => $db->query("SELECT COUNT(*) FROM products WHERE status = 'active'")->fetchColumn(),
     'cities' => $db->query("SELECT COUNT(*) FROM cities WHERE status = 'active'")->fetchColumn(),
     'enquiries' => $db->query("SELECT COUNT(*) FROM enquiries WHERE status = 'new'")->fetchColumn(),
@@ -29,19 +28,6 @@ $recentEnquiries = $db->query("SELECT * FROM enquiries ORDER BY created_at DESC 
                             <h2 class="mb-0"><?php echo $stats['brands']; ?></h2>
                         </div>
                         <i class="bi bi-tags" style="font-size: 2.5rem; opacity: 0.5;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0">Categories</h6>
-                            <h2 class="mb-0"><?php echo $stats['categories']; ?></h2>
-                        </div>
-                        <i class="bi bi-grid" style="font-size: 2.5rem; opacity: 0.5;"></i>
                     </div>
                 </div>
             </div>
