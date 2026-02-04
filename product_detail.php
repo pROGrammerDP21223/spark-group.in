@@ -31,7 +31,7 @@ if (!$brandData) {
 // First, try to find product with the full slug as-is
 $productStmt = $db->prepare("SELECT * FROM products WHERE slug = ? AND brand_id = ? AND status = 'active'");
 $productStmt->execute([$slug, $brandData['id']]);
-$product = $productStmt->fetch();
+$product = $productStmt->fetch(PDO::FETCH_ASSOC);
 
 // If product not found and slug contains hyphen, try to extract city from slug
 // Only do this if product doesn't exist with full slug
@@ -52,7 +52,7 @@ if (!$product && empty($city) && strpos($slug, '-') !== false) {
         // Try to find product with the new slug (without city)
         $productStmt = $db->prepare("SELECT * FROM products WHERE slug = ? AND brand_id = ? AND status = 'active'");
         $productStmt->execute([$newSlug, $brandData['id']]);
-        $product = $productStmt->fetch();
+        $product = $productStmt->fetch(PDO::FETCH_ASSOC);
         
         // Only use city extraction if we found a product with the new slug
         if ($product) {
