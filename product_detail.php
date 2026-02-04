@@ -196,7 +196,7 @@ renderBreadcrumb($breadcrumbTitle, [
                         <?php if (!empty($pageSEO['h2_text'])): ?>
                     <p class="mb-4"><?php echo htmlspecialchars($pageSEO['h2_text']); ?></p>
                 <?php endif; ?>
-                        <?php if ($product['short_description']): ?>
+                        <?php if (!empty($product['short_description'] ?? '')): ?>
                         <div class="pr_desc">
                             <p><?php echo htmlspecialchars($product['short_description']); ?></p>
                         </div>
@@ -241,25 +241,25 @@ renderBreadcrumb($breadcrumbTitle, [
         	<div class="col-12">
             	<div class="tab-style3">
 					<ul class="nav nav-tabs" role="tablist">
-						<?php if ($product['description']): ?>
+						<?php if (!empty($product['description'] ?? '')): ?>
 						<li class="nav-item">
 							<a class="nav-link active" id="Description-tab" data-bs-toggle="tab" href="#Description" role="tab" aria-controls="Description" aria-selected="true">Description</a>
                       	</li>
                       	<?php endif; ?>
                       	<?php if (!empty($specs)): ?>
                       	<li class="nav-item">
-                        	<a class="nav-link<?php echo empty($product['description']) ? ' active' : ''; ?>" id="Additional-info-tab" data-bs-toggle="tab" href="#Additional-info" role="tab" aria-controls="Additional-info" aria-selected="false">Specifications</a>
+                        	<a class="nav-link<?php echo empty($product['description'] ?? '') ? ' active' : ''; ?>" id="Additional-info-tab" data-bs-toggle="tab" href="#Additional-info" role="tab" aria-controls="Additional-info" aria-selected="false">Specifications</a>
                       	</li>
                       	<?php endif; ?>
                     </ul>
                 	<div class="tab-content shop_info_tab">
-                      	<?php if ($product['description']): ?>
+                      	<?php if (!empty($product['description'] ?? '')): ?>
                       	<div class="tab-pane fade show active" id="Description" role="tabpanel" aria-labelledby="Description-tab">
                         	<?php echo $product['description']; ?>
                       	</div>
                       	<?php endif; ?>
                       	<?php if (!empty($specs)): ?>
-                      	<div class="tab-pane fade<?php echo empty($product['description']) ? ' show active' : ''; ?>" id="Additional-info" role="tabpanel" aria-labelledby="Additional-info-tab">
+                      	<div class="tab-pane fade<?php echo empty($product['description'] ?? '') ? ' show active' : ''; ?>" id="Additional-info" role="tabpanel" aria-labelledby="Additional-info-tab">
                         	<table class="table table-bordered">
                             	<?php foreach ($specs as $spec): ?>
                             	<tr>
@@ -301,7 +301,7 @@ renderBreadcrumb($breadcrumbTitle, [
                                 </div>
                                 <div class="product_info">
                                     <h6 class="product_title"><?php echo htmlspecialchars($rel['name']); ?></h6>
-                                    <?php if ($rel['short_description']): ?>
+                                    <?php if (!empty($rel['short_description'] ?? '')): ?>
                                     <div class="pr_desc">
                                         <p><?php echo htmlspecialchars(mb_substr($rel['short_description'], 0, 100)) . (mb_strlen($rel['short_description']) > 100 ? '...' : ''); ?></p>
                                     </div>
