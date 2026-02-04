@@ -68,12 +68,16 @@ if (!$product) {
     redirect(SITE_URL . '/404');
 }
 
+// CRITICAL: Store product data in a protected variable IMMEDIATELY after fetching
+// This prevents $product from being accidentally overwritten in loops or includes
+$currentProduct = $product;
+
 // Get SEO data
-$seoData = getSEOData($db, 'product', $product['id'], $cityId);
+$seoData = getSEOData($db, 'product', $currentProduct['id'], $cityId);
 
 // Build H1 dynamically
 if (empty($seoData['h1_text'])) {
-    $seoData['h1_text'] = $product['name'];
+    $seoData['h1_text'] = $currentProduct['name'];
     if ($cityData) {
         $seoData['h1_text'] .= ' Authorised Dealer Distributor and Supplier in ' . $cityData['name'];
     }
@@ -81,7 +85,7 @@ if (empty($seoData['h1_text'])) {
 
 // Build meta title
 if (empty($seoData['meta_title'])) {
-    $seoData['meta_title'] = $product['name'] . ' - ' . $brandData['name'];
+    $seoData['meta_title'] = $currentProduct['name'] . ' - ' . $brandData['name'];
     if ($cityData) {
         $seoData['meta_title'] .= ' Authorised Dealer Distributor and Supplier in ' . $cityData['name'];
     }
@@ -90,7 +94,7 @@ if (empty($seoData['meta_title'])) {
 
 // Build canonical URL (no category segment)
 if (empty($seoData['canonical_url'])) {
-    $seoData['canonical_url'] = SITE_URL . '/' . $brandData['slug'] . '/' . $product['slug'];
+    $seoData['canonical_url'] = SITE_URL . '/' . $brandData['slug'] . '/' . $currentProduct['slug'];
     if ($cityData) {
         $seoData['canonical_url'] .= '-' . $cityData['slug'];
     }
@@ -98,13 +102,13 @@ if (empty($seoData['canonical_url'])) {
 
 // Get product specifications
 $specs = $db->prepare("SELECT * FROM product_specifications WHERE product_id = ? ORDER BY sort_order ASC, id ASC");
-$specs->execute([$product['id']]);
+$specs->execute([$currentProduct['id']]);
 $specs = $specs->fetchAll();
 
 // Get gallery images
 $gallery = [];
-if (!empty($product['gallery'])) {
-    $gallery = json_decode($product['gallery'], true);
+if (!empty($currentProduct['gallery'])) {
+    $gallery = json_decode($currentProduct['gallery'], true);
     if (!is_array($gallery)) {
         $gallery = [];
     }
@@ -115,7 +119,7 @@ $relatedStmt = $db->prepare("SELECT * FROM products
                              WHERE brand_id = ? AND status = 'active' AND id != ?
                              ORDER BY sort_order ASC, name ASC
                              LIMIT 12");
-$relatedStmt->execute([$brandData['id'], $product['id']]);
+$relatedStmt->execute([$brandData['id'], $currentProduct['id']]);
 $relatedProducts = $relatedStmt->fetchAll();
 
 // Set page SEO
@@ -134,7 +138,8 @@ require __DIR__ . '/includes/public/header.php';
 require_once __DIR__ . '/includes/public/breadcrumb.php';
 
 // Store product/brand data in safe variables before including header
-$currentProductName = $product['name'];
+// Use $currentProduct (protected) instead of $product to prevent overwriting
+$currentProductName = $currentProduct['name'];
 $currentBrandName = $brandData['name'];
 $currentBrandSlug = $brandData['slug'];
 
@@ -161,9 +166,10 @@ renderBreadcrumb($breadcrumbTitle, [
                     <div class="product_img_box">
                         <?php
                         // Build array of all images (main image + gallery)
+                        // Use $currentProduct (protected) to ensure we always have the correct product data
                         $allImages = [];
-                        if (!empty($product['image'])) {
-                            $allImages[] = $product['image'];
+                        if (!empty($currentProduct['image'])) {
+                            $allImages[] = $currentProduct['image'];
                         }
                         if (!empty($gallery) && is_array($gallery)) {
                             $allImages = array_merge($allImages, $gallery);
@@ -172,14 +178,14 @@ renderBreadcrumb($breadcrumbTitle, [
                         // Get main image (first one)
                         $mainImage = !empty($allImages[0]) ? UPLOAD_URL . '/' . $allImages[0] : SITE_URL . '/assets/images/product_img1.jpg';
                         ?>
-                        <img id="product_img" src="<?php echo htmlspecialchars($mainImage); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                        <img id="product_img" src="<?php echo htmlspecialchars($mainImage); ?>" alt="<?php echo htmlspecialchars($currentProduct['name']); ?>">
                     </div>
                     <?php if (count($allImages) > 0): ?>
                     <div id="pr_item_gallery" class="product_gallery_item slick_slider" data-slides-to-show="4" data-slides-to-scroll="1" data-infinite="false">
                         <?php foreach ($allImages as $index => $img): ?>
                         <div class="item">
                             <a href="#" class="product_gallery_item<?php echo $index === 0 ? ' active' : ''; ?>" data-image="<?php echo htmlspecialchars(UPLOAD_URL . '/' . $img); ?>">
-                                <img src="<?php echo htmlspecialchars(UPLOAD_URL . '/' . $img); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                <img src="<?php echo htmlspecialchars(UPLOAD_URL . '/' . $img); ?>" alt="<?php echo htmlspecialchars($currentProduct['name']); ?>">
                             </a>
                         </div>
                         <?php endforeach; ?>
@@ -190,15 +196,15 @@ renderBreadcrumb($breadcrumbTitle, [
             <div class="col-lg-6 col-md-6">
                 <div class="pr_detail">
                     <div class="product_description">
-                        <h4 class="product_title"><a href="#"><?php echo htmlspecialchars($product['name']); ?></a></h4>
+                        <h4 class="product_title"><a href="#"><?php echo htmlspecialchars($currentProduct['name']); ?></a></h4>
                        <br>
                        <br>
                         <?php if (!empty($pageSEO['h2_text'])): ?>
                     <p class="mb-4"><?php echo htmlspecialchars($pageSEO['h2_text']); ?></p>
                 <?php endif; ?>
-                        <?php if (!empty($product['short_description'] ?? '')): ?>
+                        <?php if (!empty($currentProduct['short_description'] ?? '')): ?>
                         <div class="pr_desc">
-                            <p><?php echo htmlspecialchars($product['short_description']); ?></p>
+                            <p><?php echo htmlspecialchars($currentProduct['short_description']); ?></p>
                         </div>
                         <?php endif; ?>
                        
@@ -206,13 +212,13 @@ renderBreadcrumb($breadcrumbTitle, [
                     <hr>
                     <div class="cart_extra">
                         <div class="cart_btn">
-                            <a href="<?php echo SITE_URL; ?>/enquiry?product_id=<?php echo $product['id']; ?>" class="btn btn-fill-out"><i class="icon-envelope"></i> Send Enquiry</a>
+                            <a href="<?php echo SITE_URL; ?>/enquiry?product_id=<?php echo $currentProduct['id']; ?>" class="btn btn-fill-out"><i class="icon-envelope"></i> Send Enquiry</a>
                         </div>
                     </div>
                     <hr>
                     <ul class="product-meta">
-                        <?php if (!empty($product['sku'])): ?>
-                        <li>SKU: <a href="#"><?php echo htmlspecialchars($product['sku']); ?></a></li>
+                        <?php if (!empty($currentProduct['sku'])): ?>
+                        <li>SKU: <a href="#"><?php echo htmlspecialchars($currentProduct['sku']); ?></a></li>
                         <?php endif; ?>
                         <li>Brand: <a href="<?php echo SITE_URL . '/' . htmlspecialchars($brandData['slug']); ?>"><?php echo htmlspecialchars($brandData['name']); ?></a></li>
                     </ul>
@@ -221,8 +227,8 @@ renderBreadcrumb($breadcrumbTitle, [
                         <span>Share:</span>
                         <ul class="social_icons">
                             <?php
-                            $shareUrl = urlencode($seoData['canonical_url'] ?? SITE_URL . '/' . $brandData['slug'] . '/' . $product['slug']);
-                            $shareTitle = urlencode($product['name']);
+                            $shareUrl = urlencode($seoData['canonical_url'] ?? SITE_URL . '/' . $brandData['slug'] . '/' . $currentProduct['slug']);
+                            $shareTitle = urlencode($currentProduct['name']);
                             ?>
                             <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $shareUrl; ?>" target="_blank"><i class="ion-social-facebook"></i></a></li>
                             <li><a href="https://twitter.com/intent/tweet?url=<?php echo $shareUrl; ?>&text=<?php echo $shareTitle; ?>" target="_blank"><i class="ion-social-twitter"></i></a></li>
@@ -241,25 +247,25 @@ renderBreadcrumb($breadcrumbTitle, [
         	<div class="col-12">
             	<div class="tab-style3">
 					<ul class="nav nav-tabs" role="tablist">
-						<?php if (!empty($product['description'] ?? '')): ?>
+						<?php if (!empty($currentProduct['description'] ?? '')): ?>
 						<li class="nav-item">
 							<a class="nav-link active" id="Description-tab" data-bs-toggle="tab" href="#Description" role="tab" aria-controls="Description" aria-selected="true">Description</a>
                       	</li>
                       	<?php endif; ?>
                       	<?php if (!empty($specs)): ?>
                       	<li class="nav-item">
-                        	<a class="nav-link<?php echo empty($product['description'] ?? '') ? ' active' : ''; ?>" id="Additional-info-tab" data-bs-toggle="tab" href="#Additional-info" role="tab" aria-controls="Additional-info" aria-selected="false">Specifications</a>
+                        	<a class="nav-link<?php echo empty($currentProduct['description'] ?? '') ? ' active' : ''; ?>" id="Additional-info-tab" data-bs-toggle="tab" href="#Additional-info" role="tab" aria-controls="Additional-info" aria-selected="false">Specifications</a>
                       	</li>
                       	<?php endif; ?>
                     </ul>
                 	<div class="tab-content shop_info_tab">
-                      	<?php if (!empty($product['description'] ?? '')): ?>
+                      	<?php if (!empty($currentProduct['description'] ?? '')): ?>
                       	<div class="tab-pane fade show active" id="Description" role="tabpanel" aria-labelledby="Description-tab">
-                        	<?php echo $product['description']; ?>
+                        	<?php echo $currentProduct['description']; ?>
                       	</div>
                       	<?php endif; ?>
                       	<?php if (!empty($specs)): ?>
-                      	<div class="tab-pane fade<?php echo empty($product['description'] ?? '') ? ' show active' : ''; ?>" id="Additional-info" role="tabpanel" aria-labelledby="Additional-info-tab">
+                      	<div class="tab-pane fade<?php echo empty($currentProduct['description'] ?? '') ? ' show active' : ''; ?>" id="Additional-info" role="tabpanel" aria-labelledby="Additional-info-tab">
                         	<table class="table table-bordered">
                             	<?php foreach ($specs as $spec): ?>
                             	<tr>
