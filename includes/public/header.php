@@ -100,7 +100,7 @@ $headerEmail = !empty($contactMap['email']) ? $contactMap['email'][0]['value'] :
     <?php endif; ?>
 
     <!-- ::::::::::::::Favicon icon::::::::::::::-->
-    <link rel="shortcut icon" href="<?php echo SITE_URL; ?>/aments/assets/images/favicon.ico" type="image/png">
+    <link rel="shortcut icon" href="<?php echo SITE_URL; ?>/assets/images/favicon.png" type="image/png">
 
     <!-- ::::::::::::::All CSS Files here :::::::::::::: -->
     <!-- Use the minified version files listed below for better performance -->
