@@ -70,19 +70,35 @@ $stats['total_urls'] = 1 + // Home
     </div>
     
     <div class="alert alert-info">
-        <h6><i class="bi bi-info-circle"></i> About Sitemap</h6>
-        <p class="mb-0">
-            Your sitemap is automatically generated and available at: 
-            <a href="<?php echo SITE_URL; ?>/sitemap.xml" target="_blank">
-                <?php echo SITE_URL; ?>/sitemap.xml
-            </a>
+        <h6><i class="bi bi-info-circle"></i> About Sitemaps & Robots.txt</h6>
+        <p class="mb-2">
+            Your sitemaps and robots.txt are automatically generated and available at:
         </p>
+        <ul class="mb-2">
+            <li>
+                <strong>XML Sitemap:</strong> 
+                <a href="<?php echo SITE_URL; ?>/sitemap.xml" target="_blank">
+                    <?php echo SITE_URL; ?>/sitemap.xml
+                </a>
+            </li>
+            <li>
+                <strong>TXT Sitemap:</strong> 
+                <a href="<?php echo SITE_URL; ?>/sitemap.txt" target="_blank">
+                    <?php echo SITE_URL; ?>/sitemap.txt
+                </a>
+            </li>
+            <li>
+                <strong>Robots.txt:</strong> 
+                <a href="<?php echo SITE_URL; ?>/robots.txt" target="_blank">
+                    <?php echo SITE_URL; ?>/robots.txt
+                </a>
+            </li>
+        </ul>
         <p class="mb-0 mt-2">
-            The sitemap includes:
+            The sitemaps include:
             <ul class="mb-0">
                 <li>All static pages (Home, About, Contact, etc.)</li>
                 <li>All brand pages (base and city-wise)</li>
-                <li>All category pages (base and city-wise)</li>
                 <li>All product pages (base and city-wise)</li>
             </ul>
         </p>
@@ -90,7 +106,13 @@ $stats['total_urls'] = 1 + // Home
     
     <div class="mt-4">
         <a href="<?php echo SITE_URL; ?>/sitemap.xml" target="_blank" class="btn btn-primary">
-            <i class="bi bi-box-arrow-up-right"></i> View Sitemap
+            <i class="bi bi-box-arrow-up-right"></i> View XML Sitemap
+        </a>
+        <a href="<?php echo SITE_URL; ?>/sitemap.txt" target="_blank" class="btn btn-secondary">
+            <i class="bi bi-box-arrow-up-right"></i> View TXT Sitemap
+        </a>
+        <a href="<?php echo SITE_URL; ?>/robots.txt" target="_blank" class="btn btn-info">
+            <i class="bi bi-box-arrow-up-right"></i> View Robots.txt
         </a>
         <a href="https://search.google.com/search-console" target="_blank" class="btn btn-success">
             <i class="bi bi-google"></i> Submit to Google Search Console

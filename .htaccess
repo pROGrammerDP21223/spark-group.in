@@ -35,6 +35,10 @@ RewriteRule ^admin/(.*)$ admin/index.php?route=$1 [L,QSA]
 
 # Sitemap
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
+RewriteRule ^sitemap\.txt$ sitemap_txt.php [L]
+
+# Robots.txt
+RewriteRule ^robots\.txt$ robots.php [L]
 
 # API Routes
 RewriteRule ^api/(.*)$ api/$1 [L,QSA]

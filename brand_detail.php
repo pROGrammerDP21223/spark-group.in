@@ -22,12 +22,12 @@ if (!empty($city) && empty($cityData)) {
 if (empty($city) && strpos($slug, '-') !== false) {
     $parts = explode('-', $slug);
     $lastPart = end($parts);
-    
+
     // Check if last part is a valid city slug
     $cityCheck = $db->prepare("SELECT * FROM cities WHERE slug = ? AND status = 'active'");
     $cityCheck->execute([$lastPart]);
     $cityCheckResult = $cityCheck->fetch();
-    
+
     if ($cityCheckResult) {
         // Last part is a city, so first part(s) is the brand slug
         array_pop($parts); // Remove city part
@@ -87,12 +87,12 @@ $totalProducts->execute([$brand['id']]);
 $totalProducts = $totalProducts->fetchColumn();
 $totalPages = ceil($totalProducts / ITEMS_PER_PAGE);
 
-$products = $db->prepare("SELECT * FROM products 
+$productsStmt = $db->prepare("SELECT * FROM products 
                           WHERE brand_id = ? AND status = 'active' 
                           ORDER BY sort_order ASC, name ASC 
                           LIMIT " . ITEMS_PER_PAGE . " OFFSET $offset");
-$products->execute([$brand['id']]);
-$products = $products->fetchAll();
+$productsStmt->execute([$brand['id']]);
+$currentProducts = $productsStmt->fetchAll();
 
 // Set page SEO
 $pageSEO = $seoData;
@@ -101,7 +101,7 @@ if (!empty($seoData['seo_head'])) {
     $pageSEO['seo_head'] = $seoData['seo_head'];
 }
 
-// Store brand data in safe variables before including header (which may overwrite $brand)
+// Store brand data in safe variables before including header (which may overwrite $brand and $products)
 $currentBrandName = $brand['name'];
 $currentBrandSlug = $brand['slug'];
 $currentBrandId = $brand['id'];
@@ -119,71 +119,86 @@ if ($cityData && stripos($breadcrumbTitle, $cityData['name']) === false) {
     $breadcrumbTitle .= ' Authorised Dealer Distributor and Supplier in ' . ucwords(strtolower($cityData['name']));
 }
 
-// Render breadcrumb
-renderBreadcrumb($breadcrumbTitle, [
-    ['text' => $breadcrumbTitle]
-]);
+// // Render breadcrumb
+// renderBreadcrumb($breadcrumbTitle, [
+//     ['text' => $breadcrumbTitle]
+// ]);
 ?>
 
 
 
-<!-- START SECTION SHOP (dynamic brand categories in Shopwise style) -->
-<div class="section">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-              
-            <?php if (!empty($pageSEO['h2_text'])): ?>
-                    <p class="mb-4"><?php echo htmlspecialchars($pageSEO['h2_text']); ?></p>
-                <?php endif; ?>
-                <div class="text-center mb-4">
-                    <a href="<?php echo SITE_URL; ?>/enquiry?brand_id=<?php echo $currentBrandId; ?>" class="btn btn-fill-out">
-                        <i class="icon-envelope"></i> Send Enquiry for <?php echo htmlspecialchars($currentBrandName); ?>
-                    </a>
+
+<div class="breadcrumb-area bg-default " data-background="assets/img/breadcrumb/b1-bg-1.png">
+    <div class="container fx-container-1">
+        <div class="breadcrumb-wrap">
+
+            <!-- left-content -->
+            <div class="breadcrumb-content">
+
+                <div class="breadcrumb-list ">
+                    <a href="index.html">Home</a>
+                    <span><?php echo htmlspecialchars($breadcrumbTitle); ?></span>
                 </div>
 
-                <?php if (empty($products)): ?>
-                    <p class="text-center text-muted py-5">No products found for this brand.</p>
-                <?php else: ?>
-                    <div class="row shop_container loadmore"
-                         data-item="8"
-                         data-item-show="4"
-                         data-finish-message="No More Item to Show"
-                         data-btn="Load More">
-                        <?php foreach ($products as $product): ?>
-                            <?php
-                            $productUrl = SITE_URL . '/' . $currentBrandSlug . '/' . $product['slug'];
-                            if ($cityData) {
-                                $productUrl .= '-' . $cityData['slug'];
-                            }
-                            $image = !empty($product['image']) ? UPLOAD_URL . '/' . htmlspecialchars($product['image']) : 'assets/images/product_img1.jpg';
-                            ?>
-                            <div class="col-lg-3 col-md-4 col-6 grid_item">
-                                <a href="<?php echo $productUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
-                                    <div class="product">
-                                        <div class="product_img">
-                                            <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                        </div>
-                                        <div class="product_info">
-                                            <h6 class="product_title">
-                                                <?php echo htmlspecialchars($product['name']); ?>
-                                            </h6>
-                                            <?php if (!empty($product['short_description'])): ?>
-                                                <div class="pr_desc">
-                                                    <p><?php echo htmlspecialchars(substr($product['short_description'], 0, 100)); ?><?php echo strlen($product['short_description']) > 100 ? '...' : ''; ?></p>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+                <h1 class="breadcrumb-title fx-heading-1 text-uppercase " data-txaa-split-text-1><?php echo htmlspecialchars($breadcrumbTitle); ?></h1>
+
+             
+
+
+
             </div>
+
+            <!-- right-img -->
+            <div class="breadcrumb-img">
+                <!-- <img src="assets/img/breadcrumb/b1-img-1.png" alt=""> -->
+            </div>
+
         </div>
     </div>
 </div>
-<!-- END SECTION SHOP -->
 
+<div id="has-jump"></div>
+<div class="d-flex flex-column align-items-center justify-content-center mt-50">
+<?php if (!empty($pageSEO['h2_text'])): ?>
+    <p class="mb-4"><?php echo htmlspecialchars($pageSEO['h2_text']); ?></p>
+<?php endif; ?>
+
+<a href="<?php echo SITE_URL; ?>/enquiry" aria-label="name" class="fx-pr-btn-1">
+    <span class="text" data-back="request a quote" data-front="request a quote"></span>
+</a>
+</div>
+<!-- blog-start -->
+
+
+<div class="fx-blog-page-area pt-50 pb-120">
+    <div class="container fx-container-1">
+        <div class="fx-blog-page-item mb-65">
+            <?php if (empty($currentProducts)): ?>
+                <p class="text-center">No products found for this brand.</p>
+            <?php else: ?>
+                <?php foreach ($currentProducts as $product): ?>
+                <?php
+                $productUrl = SITE_URL . '/' . $currentBrandSlug . '/' . $product['slug'];
+                if ($cityData) {
+                    $productUrl .= '-' . $cityData['slug'];
+                }
+                $image = !empty($product['image']) ? UPLOAD_URL . '/' . htmlspecialchars($product['image']) : 'assets/images/product_img1.jpg';
+                ?>
+                <!-- single-blog -->
+                <a href="<?php echo $productUrl; ?>" aria-label="name"
+                   class="fx-blog-1-item-single"
+                   style="display: block; text-decoration: none; color: inherit;">
+                    <div class="item-img fix img-cover p-relative mb-35">
+                        <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                    </div>
+                    <h4 class="item-title fx-heading-1 fx-font-500">
+                        <?php echo htmlspecialchars($product['name']); ?>
+                    </h4>
+                </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<!-- blog-end -->
 <?php require __DIR__ . '/includes/public/footer.php'; ?>

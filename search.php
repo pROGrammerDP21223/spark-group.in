@@ -110,133 +110,140 @@ $brands = $searchBrands;
 <div class="offcanvas-overlay"></div>
 
 <?php
-// Render breadcrumb
-renderBreadcrumb($pageSEO['h1_text'], [
-    ['text' => 'Home', 'url' => SITE_URL],
-    ['text' => 'Search']
-]);
-
 // Ensure products and brands are still arrays after breadcrumb
 $products = is_array($products) ? $products : (isset($searchProducts) ? $searchProducts : []);
 $brands = is_array($brands) ? $brands : (isset($searchBrands) ? $searchBrands : []);
+
+// Filter out brands that don't actually match (double-check)
+$filteredBrands = [];
+if (!empty($brands)) {
+    foreach ($brands as $brand) {
+        if (stripos($brand['name'], $originalSearchQuery) !== false) {
+            $filteredBrands[] = $brand;
+        }
+    }
+}
+$brands = $filteredBrands;
+
+$totalResults = count($products) + count($brands);
+$breadcrumbTitle = !empty($searchQuery) ? 'Search Results for "' . htmlspecialchars($searchQuery) . '"' : 'Search';
 ?>
 
-<!-- START SECTION SHOP -->
-<div class="section">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <?php 
-                // Ensure variables are arrays
-                $products = is_array($products) ? $products : [];
-                $brands = is_array($brands) ? $brands : [];
-                ?>
-                <?php if (empty($originalSearchQuery)): ?>
-                    <div class="text-center py-5">
-                        <p class="text-muted">Please enter a search term to find products or brands.</p>
-                    </div>
-                <?php else: ?>
-                    <?php 
-                    // Filter out brands that don't actually match (double-check)
-                    $filteredBrands = [];
-                    if (!empty($brands)) {
-                        foreach ($brands as $brand) {
-                            if (stripos($brand['name'], $originalSearchQuery) !== false) {
-                                $filteredBrands[] = $brand;
-                            }
-                        }
-                    }
-                    $brands = $filteredBrands;
-                    
-                    $totalResults = count($products) + count($brands);
-                    ?>
-                    
-                    <?php if ($totalResults == 0): ?>
-                        <div class="text-center py-5">
-                            <p class="text-muted">No results found for "<strong><?php echo htmlspecialchars($searchQuery); ?></strong>".</p>
-                            <p class="text-muted">Try searching with different keywords.</p>
-                        </div>
-                    <?php else: ?>
-                        <p class="mb-4">Found <strong><?php echo $totalResults; ?></strong> result(s) for "<strong><?php echo htmlspecialchars($searchQuery); ?></strong>"</p>
+<div class="breadcrumb-area bg-default " data-background="assets/img/breadcrumb/b1-bg-1.png">
+    <div class="container fx-container-1">
+        <div class="breadcrumb-wrap">
 
-                    <!-- Brands Results -->
-                    <?php if (!empty($brands)): ?>
-                        <div class="mb-5">
-                            <h3 class="mb-4">Brands (<?php echo count($brands); ?>)</h3>
-                            <div class="row shop_container">
-                                <?php foreach ($brands as $brand): ?>
-                                    <?php
-                                    $brandUrl = SITE_URL . '/' . $brand['slug'];
-                                    ?>
-                                    <div class="col-lg-3 col-md-4 col-6 grid_item">
-                                        <a href="<?php echo $brandUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
-                                            <div class="product">
-                                                <div class="product_img">
-                                                    <?php if (!empty($brand['image'])): ?>
-                                                        <img src="<?php echo UPLOAD_URL . '/' . htmlspecialchars($brand['image']); ?>" alt="<?php echo htmlspecialchars($brand['name']); ?>">
-                                                    <?php else: ?>
-                                                        <img src="assets/images/product_img1.jpg" alt="<?php echo htmlspecialchars($brand['name']); ?>">
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="product_info">
-                                                    <h6 class="product_title"><?php echo htmlspecialchars($brand['name']); ?></h6>
-                                                    <?php if (!empty($brand['description'])): ?>
-                                                        <div class="pr_desc">
-                                                            <p><?php echo htmlspecialchars(substr($brand['description'], 0, 100)); ?><?php echo strlen($brand['description']) > 100 ? '...' : ''; ?></p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
+            <!-- left-content -->
+            <div class="breadcrumb-content">
 
-                    <!-- Products Results -->
-                    <?php if (!empty($products)): ?>
-                        <div class="mb-5">
-                            <h3 class="mb-4">Products (<?php echo count($products); ?>)</h3>
-                            <div class="row shop_container">
-                                <?php foreach ($products as $product): ?>
-                                    <?php
-                                    $productUrl = SITE_URL . '/' . $product['brand_slug'] . '/' . $product['slug'];
-                                    $productImage = !empty($product['image']) ? UPLOAD_URL . '/' . $product['image'] : SITE_URL . '/assets/images/product_img1.jpg';
-                                    ?>
-                                    <div class="col-lg-3 col-md-4 col-6 grid_item">
-                                        <a href="<?php echo $productUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
-                                            <div class="product">
-                                                <div class="product_img">
-                                                    <img src="<?php echo htmlspecialchars($productImage); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                                </div>
-                                                <div class="product_info">
-                                                    <h6 class="product_title"><?php echo htmlspecialchars($product['name']); ?></h6>
-                                                    <?php if (!empty($product['brand_name'])): ?>
-                                                        <div class="pr_desc">
-                                                            <p><small>Brand: <?php echo htmlspecialchars($product['brand_name']); ?></small></p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if (!empty($product['short_description'])): ?>
-                                                        <div class="pr_desc">
-                                                            <p><?php echo htmlspecialchars(substr($product['short_description'], 0, 100)); ?><?php echo strlen($product['short_description']) > 100 ? '...' : ''; ?></p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                    <?php endif; ?>
-                <?php endif; ?>
+                <div class="breadcrumb-list ">
+                    <a href="<?php echo SITE_URL; ?>">Home</a>
+                    <span><?php echo $breadcrumbTitle; ?></span>
+                </div>
+
+                <h1 class="breadcrumb-title fx-heading-1 text-uppercase " data-txaa-split-text-1><?php echo $breadcrumbTitle; ?></h1>
+
             </div>
+
+            <!-- right-img -->
+            <div class="breadcrumb-img">
+                <!-- <img src="assets/img/breadcrumb/b1-img-1.png" alt=""> -->
+            </div>
+
         </div>
     </div>
 </div>
-<!-- END SECTION SHOP -->
+
+<div id="has-jump"></div>
+
+<?php if (empty($originalSearchQuery)): ?>
+    <div class="d-flex flex-column align-items-center justify-content-center mt-50">
+        <p class="mb-4">Please enter a search term to find products or brands.</p>
+        <a href="<?php echo SITE_URL; ?>/enquiry" aria-label="name" class="fx-pr-btn-1">
+            <span class="text" data-back="request a quote" data-front="request a quote"></span>
+        </a>
+    </div>
+<?php elseif ($totalResults == 0): ?>
+    <div class="d-flex flex-column align-items-center justify-content-center mt-50">
+        <p class="mb-4">No results found for "<strong><?php echo htmlspecialchars($searchQuery); ?></strong>".</p>
+        <p class="mb-4">Try searching with different keywords.</p>
+        <a href="<?php echo SITE_URL; ?>/enquiry" aria-label="name" class="fx-pr-btn-1">
+            <span class="text" data-back="request a quote" data-front="request a quote"></span>
+        </a>
+    </div>
+<?php else: ?>
+    <div class="d-flex flex-column align-items-center justify-content-center mt-50">
+        <p class="mb-4">Found <strong><?php echo $totalResults; ?></strong> result(s) for "<strong><?php echo htmlspecialchars($searchQuery); ?></strong>"</p>
+        <a href="<?php echo SITE_URL; ?>/enquiry" aria-label="name" class="fx-pr-btn-1">
+            <span class="text" data-back="request a quote" data-front="request a quote"></span>
+        </a>
+    </div>
+    <!-- blog-start -->
+
+    <!-- Products Results -->
+    <?php if (!empty($products)): ?>
+        <div class="fx-blog-page-area pt-50 pb-120">
+            <div class="container fx-container-1">
+                <?php if (count($products) > 0): ?>
+                    <h3 class="mb-4 text-center">Products (<?php echo count($products); ?>)</h3>
+                <?php endif; ?>
+                <div class="fx-blog-page-item mb-65">
+                    <?php foreach ($products as $product): ?>
+                        <?php
+                        $productUrl = SITE_URL . '/' . $product['brand_slug'] . '/' . $product['slug'];
+                        $image = !empty($product['image']) ? UPLOAD_URL . '/' . htmlspecialchars($product['image']) : 'assets/images/product_img1.jpg';
+                        ?>
+                        <!-- single-blog -->
+                        <a href="<?php echo $productUrl; ?>" aria-label="name"
+                           class="fx-blog-1-item-single"
+                           style="display: block; text-decoration: none; color: inherit;">
+                            <div class="item-img fix img-cover p-relative mb-35">
+                                <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                            </div>
+                            <h4 class="item-title fx-heading-1 fx-font-500">
+                                <?php echo htmlspecialchars($product['name']); ?>
+                            </h4>
+                            <?php if (!empty($product['brand_name'])): ?>
+                                <p class="text-muted"><small>Brand: <?php echo htmlspecialchars($product['brand_name']); ?></small></p>
+                            <?php endif; ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Brands Results -->
+    <?php if (!empty($brands)): ?>
+        <div class="fx-blog-page-area pt-50 pb-120">
+            <div class="container fx-container-1">
+                <?php if (count($brands) > 0): ?>
+                    <h3 class="mb-4 text-center">Brands (<?php echo count($brands); ?>)</h3>
+                <?php endif; ?>
+                <div class="fx-blog-page-item mb-65">
+                    <?php foreach ($brands as $brand): ?>
+                        <?php
+                        $brandUrl = SITE_URL . '/' . $brand['slug'];
+                        $image = !empty($brand['image']) ? UPLOAD_URL . '/' . htmlspecialchars($brand['image']) : 'assets/images/product_img1.jpg';
+                        ?>
+                        <!-- single-blog -->
+                        <a href="<?php echo $brandUrl; ?>" aria-label="name"
+                           class="fx-blog-1-item-single"
+                           style="display: block; text-decoration: none; color: inherit;">
+                            <div class="item-img fix img-cover p-relative mb-35">
+                                <img src="<?php echo $image; ?>" alt="<?php echo htmlspecialchars($brand['name']); ?>">
+                            </div>
+                            <h4 class="item-title fx-heading-1 fx-font-500">
+                                <?php echo htmlspecialchars($brand['name']); ?>
+                            </h4>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+    <!-- blog-end -->
+<?php endif; ?>
 
 <?php require __DIR__ . '/includes/public/footer.php'; ?>
 

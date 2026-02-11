@@ -100,299 +100,163 @@ $headerEmail = !empty($contactMap['email']) ? $contactMap['email'][0]['value'] :
     <?php endif; ?>
 
     <!-- ::::::::::::::Favicon icon::::::::::::::-->
-    <link rel="shortcut icon" href="<?php echo SITE_URL; ?>/assets/images/favicon.png" type="image/png">
+    <link rel="shortcut icon" href="<?php echo SITE_URL; ?>/assets/img/favicon.png" type="image/png">
 
     <!-- ::::::::::::::All CSS Files here :::::::::::::: -->
-    <!-- Use the minified version files listed below for better performance -->
-     <!-- Animation CSS -->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/animate.css">	
-<!-- Latest Bootstrap min CSS -->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/bootstrap/css/bootstrap.min.css">
-<!-- Google Font -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-<!-- Icon Font CSS -->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/all.min.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ionicons.min.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/themify-icons.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/linearicons.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/flaticon.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/simple-line-icons.css">
-<!--- owl carousel CSS-->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/owlcarousel/css/owl.carousel.min.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/owlcarousel/css/owl.theme.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/owlcarousel/css/owl.theme.default.min.css">
-<!-- Magnific Popup CSS -->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/magnific-popup.css">
-<!-- Slick CSS -->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/slick.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/slick-theme.css">
-<!-- Style CSS -->
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/responsive.css">
+   
+	<!-- CSS here -->
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/all.min.css">
+        <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/nice-select.css">
+        <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/swiper.min.css">
+        <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/animate.css">
+        <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/magnific-popup.css">
+        <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/main.css">
 <link rel="stylesheet" href="<?php echo SITE_URL; ?>/form_styles.css">
 <script src="<?php echo SITE_URL; ?>/form_config.js"></script>
    
 
 </head>
+<body class="fd-home-1" >
 
-<body>
-
-
-
-<!-- Home Popup Section -->
-<!-- <div class="modal fade subscribe_popup" id="onload-popup" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><i class="ion-ios-close-empty"></i></span>
-                </button>
-                <div class="row g-0">
-                    <div class="col-sm-7">
-                        <div class="popup_content  text-start">
-                            <div class="popup-text">
-                                <div class="heading_s1">
-                                    <h3>Subscribe Newsletter and Get 25% Discount!</h3>
-                                </div>
-                                <p>Subscribe to the newsletter to receive updates about new products.</p>
-                            </div>
-                            <form method="post">
-                            	<div class="form-group mb-3">
-                                	<input name="email" required="" type="email" class="form-control" placeholder="Enter Your Email">
-                                </div>
-                                <div class="form-group mb-3">
-                                	<button class="btn btn-fill-out btn-block text-uppercase" title="Subscribe" type="submit">Subscribe</button>
-                                </div>
-                            </form>
-                            <div class="chek-form">
-                                <div class="custome-checkbox">
-                                    <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox3" value="">
-                                    <label class="form-check-label" for="exampleCheckbox3"><span>Don't show this popup again!</span></label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-5">
-                    	<div class="background_bg h-100" data-img-src="assets/images/popup_img3.jpg"></div>
-                    </div>
-                </div>
-            </div>
-    	</div>
-    </div>
-</div> -->
-<!-- End Screen Load Popup Section --> 
-
-<!-- START HEADER -->
-<header class="header_wrap">
-	<div class="top-header light_skin bg_dark d-none d-md-block">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 col-md-8">
-                	<div class="header_topbar_info">
-                    	<div class="header_offer">
-                            <span>Welcome to <?php echo SITE_NAME; ?>!</span>
-                        </div>
-                       
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-4">
-                	<div class="d-flex align-items-center justify-content-center justify-content-md-end">
-                        <div class="lng_dropdown">
-                           
-                        </div>
-                        <div class="ms-3">
-                            <?php if ($headerEmail): ?>
-                                <span><i class="linearicons-mailbox-full"></i> <?php echo htmlspecialchars($headerEmail); ?></span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
+<!-- preloader-start -->
+<div id="preloader">
+    <div class="preloader-wrap">
+        <div class="loading">
+            <div class="icon-ani">
+                <img src="<?php echo SITE_URL; ?>/assets/img/preloader.gif" alt="">
             </div>
         </div>
     </div>
-    <div class="middle-header dark_skin">
-    	<div class="container">
-            <div class="nav_block">
-                <a class="navbar-brand" href="<?php echo SITE_URL; ?>">
-                    <img class="logo_light" src="<?php echo SITE_URL; ?>/assets/images/logo_light.png" alt="<?php echo SITE_URL; ?>">
-                    <img class="logo_dark" src="<?php echo SITE_URL; ?>/assets/images/logo_dark.png" alt="<?php echo SITE_URL; ?>">
+</div>
+<!-- preloader-end -->
+
+<!-- header-start -->
+<div class="fx-header-1-area txa_sticky_header ">
+    <div class="fx-header-1-container">
+        <!-- header-top -->
+        <div class="fx-header-1-top" >
+            <ul class="fx-contact-list">
+                <li>
+                    Welcome to <?php echo SITE_NAME; ?>!
+                </li>
+                <li>
+                    <a href="#" aria-label="name">
+                        <i class="fa-regular fa-envelope"></i>
+                        <?php echo htmlspecialchars($headerEmail); ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" aria-label="name">
+                        <i class="fa-regular fa-phone-volume"></i> 
+                        <?php echo htmlspecialchars($headerPhone); ?>
+                    </a>
+                </li>
+               
+            </ul>
+            <div class="fx-social-icon">
+                <a href="#" class="fx-social-icon-btn" aria-label="name">
+                    <i class="fa-brands fa-facebook-f"></i>
                 </a>
-                <div class="product_search_form radius_input search_form_btn">
-                    <form method="get" action="<?php echo SITE_URL; ?>/search">
-                        <div class="input-group">
-                            <input name="q" class="form-control" placeholder="Search Product..." required="" type="text" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-                            <button type="submit" class="search_btn3">Search</button>
-                        </div>
-                    </form>
-                </div>
-                <ul class="navbar-nav attr-nav align-items-center">
-                    <li><a href="<?php echo SITE_URL; ?>/enquiry" class="nav-link"><img src="<?php echo SITE_URL; ?>/assets/images/get-quote.png" alt="Get Quote" width=150></a></li>
-                
-                    
-                </ul>
+                <a href="#" class="fx-social-icon-btn" aria-label="name">
+                    <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="fx-social-icon-btn" aria-label="name">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+                <a href="#" class="fx-social-icon-btn" aria-label="name">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
             </div>
         </div>
-    </div>
-    <div class="bottom_header dark_skin main_menu_uppercase border-top sticky-nav">
-    	<div class="container">
-            <div class="row align-items-center"> 
-            	
-                <div class="col-lg-12 col-md-8 col-sm-6 col-12">
-                	<nav class="navbar navbar-expand-lg">
-                    	<button class="navbar-toggler side_navbar_toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSidetoggle" aria-expanded="false"> 
-                            <span class="ion-android-menu"></span>
-                        </button>
-                        <div class="pr_search_icon">
-                            <a href="javascript:;" class="nav-link pr_search_trigger"><i class="linearicons-magnifier"></i></a>
-                            <div class="search_wrap">
-                                <span class="close-search"><i class="ion-ios-close-empty"></i></span>
-                                <form method="get" action="<?php echo SITE_URL; ?>/search">
-                                    <input name="q" type="text" placeholder="Search" class="form-control" id="search_input" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-                                    <button type="submit" class="search_icon"><i class="ion-ios-search-strong"></i></button>
-                                </form>
-                            </div>
-                            <div class="search_overlay"></div>
-                        </div> 
-                        <div class="collapse navbar-collapse mobile_side_menu" id="navbarSidetoggle">
-                            <div class="mobile_menu_close">
-                                <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#navbarSidetoggle" aria-expanded="false" aria-label="Close">
-                                    <i class="ion-ios-close-empty"></i>
-                                </button>
-                            </div>
-                            <ul class="navbar-nav">
-                               
-                                <li><a class="nav-link nav_item <?php echo ($type === 'home' && $page === 'home') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>">Home</a></li>
-                                <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'about') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/about-us">About Us</a></li>
-                                <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'certifications') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/certifications">Certifications</a></li>
-                                <?php if (!empty($brandsWithProducts)): ?>
-                                <li class="dropdown <?php echo ($type === 'brand') ? 'active' : ''; ?>">
-                                    <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">Brands</a>
-                                    <div class="dropdown-menu">
-                                        <ul>
-                                            <?php foreach ($brandsWithProducts as $navBrand): ?>
-                                            <li>
-                                                <a class="dropdown-item  <?php if (!empty($navBrand['products'])): ?> dropdown-toggler  <?php endif; ?>" href="<?php echo SITE_URL . '/' . $navBrand['slug']; ?>">
-                                                    <?php echo htmlspecialchars($navBrand['name']); ?>
-                                                </a>
-                                                <?php if (!empty($navBrand['products'])): ?>
-                                                <div class="dropdown-menu">
-                                                    <ul>
-                                                        <?php foreach ($navBrand['products'] as $product): ?>
-                                                        <li>
-                                                            <a class="dropdown-item nav-link nav_item" href="<?php echo SITE_URL . '/' . $navBrand['slug'] . '/' . $product['slug']; ?>">
-                                                                <?php echo htmlspecialchars($product['name']); ?>
-                                                            </a>
-                                                        </li>
-                                                        <?php endforeach; ?>
-                                                    </ul>
-                                                </div>
-                                                <?php endif; ?>
-                                            </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </div>
-                                </li>
+
+        <!-- header-main -->
+        <div class="fx-header-1-main">
+
+            <!-- logo -->
+            <a href="<?php echo SITE_URL; ?>" aria-label="name" class="fx-header-1-main-logo">
+                <img src="<?php echo SITE_URL; ?>/assets/img/logo/logo.png" alt="">
+            </a>
+
+            <!-- menu -->
+            <nav class="main-navigation fx-ml-auto d-none d-lg-block ">
+                <ul id="main-nav" class="nav navbar-nav clearfix">
+
+                    <li>
+                        <a class="<?php echo ($type === 'home' && $page === 'home') ? 'is-active' : ''; ?>" href="<?php echo SITE_URL; ?>">home</a>
+                    </li>
+
+                    <li>
+                        <a class="<?php echo (isset($page) && $page === 'about') ? 'is-active' : ''; ?>" href="<?php echo SITE_URL; ?>/about-us">about</a>
+                    </li>
+                    <li>
+                        <a class="<?php echo (isset($page) && $page === 'certifications') ? 'is-active' : ''; ?>" href="<?php echo SITE_URL; ?>/certifications">Certifications</a>
+                    </li>
+                    <?php if (!empty($brandsWithProducts)): ?>                 
+                    <li class="dropdown">
+                        <a class="<?php echo ($type === 'brand') ? 'is-active' : ''; ?>" href="!#">Brands</a>
+                        <ul class="dropdown-menu clearfix">
+                            <?php foreach ($brandsWithProducts as $navBrand): ?>
+                            
+                            <li class="<?php if (!empty($navBrand['products'])): ?> dropdown <?php endif; ?>">
+                                <a href="<?php echo SITE_URL . '/' . $navBrand['slug']; ?>"> <?php echo htmlspecialchars($navBrand['name']); ?></a>
+                                <?php if (!empty($navBrand['products'])): ?>
+                                <ul class="dropdown-menu clearfix">
+                                    <?php foreach ($navBrand['products'] as $product): ?>
+                                    <li>
+                                        <a href="<?php echo SITE_URL . '/' . $navBrand['slug'] . '/' . $product['slug']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
                                 <?php endif; ?>
-                                
-                               
-                                <!-- <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'testimonials') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/testimonials">Testimonials</a></li> -->
-                                <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'contact') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/contact-us">Contact Us</a></li>
-                                <li><a class="nav-link nav_item <?php echo (isset($page) && $page === 'enquiry') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/enquiry">Enquiry</a></li>
-
-                               
+                            </li>
+                            <?php endforeach; ?>
                             </ul>
-                        </div>
-                        <div class="contact_phone contact_support">
-                            <i class="linearicons-phone-wave"></i>
-                            <span><?php if ($headerPhone): ?><?php echo htmlspecialchars($headerPhone); ?><?php endif; ?></span>
-                        </div>
-                    </nav>
-                </div>
+                            <?php endif; ?>
+                            <!-- <li>
+                                <a class="<?php echo (isset($page) && $page === 'testimonials') ? 'is-active' : ''; ?>" href="<?php echo SITE_URL; ?>/`testimonials">Testimonials</a>
+                            </li> -->
+                            <li>
+                                <a class="<?php echo (isset($page) && $page === 'contact') ? 'is-active' : ''; ?>" href="<?php echo SITE_URL; ?>/contact-us">Contact Us</a>
+                            </li>
+                            <li>
+                                <a class="<?php echo (isset($page) && $page === 'enquiry') ? 'is-active' : ''; ?>" href="<?php echo SITE_URL; ?>/enquiry">Enquiry</a>
+                            </li>
+                        </ul>
+                    </li>
+                 </ul>
+            </nav>
+
+            <!-- action-btn -->
+            <div class="fx-header-1-action-link d-flex align-items-center justify-content-end">
+
+                <!-- search-btn -->
+                <button type="button" aria-label="name" class="fx-search-btn-1 search_btn_toggle">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    search...
+                </button>
+
+                <!-- pr-btn -->
+                <a href="<?php echo SITE_URL; ?>/enquiry" aria-label="name" class="fx-pr-btn-1">
+                    <span class="text" data-back="request a quote" data-front="request a quote"></span>
+                </a>
+
+                <!-- sidebar-btn -->
+                <button type="button" aria-label="name" class="fx-menu-btn-1 offcanvas_toggle" >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
             </div>
+
         </div>
     </div>
-</header>
-<!-- END HEADER -->
-
-<style>
-/* Enable hover dropdown for Brands menu on desktop */
-@media (min-width: 992px) {
-    .navbar-nav .dropdown .dropdown-menu {
-        display: none;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.2s ease, visibility 0.2s ease;
-        margin-top: 0;
-    }
-    
-    .navbar-nav .dropdown:hover > .dropdown-menu,
-    .navbar-nav .dropdown .dropdown-menu:hover {
-        display: block !important;
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    /* Nested dropdown on hover */
-    .navbar-nav .dropdown-menu > ul > li {
-        position: relative;
-    }
-    
-    .navbar-nav .dropdown-menu > ul > li .dropdown-menu {
-        display: none;
-        position: absolute;
-        left: 100%;
-        top: 0;
-        margin: 0;
-        border: 0;
-        min-width: 12rem;
-        box-shadow: 10px 16px 49px 0px rgba(38,42,46,0.05);
-        border-radius: 0;
-        padding: 5px 0;
-    }
-    
-    .navbar-nav .dropdown-menu > ul > li:hover > .dropdown-menu {
-        display: block !important;
-        opacity: 1;
-        visibility: visible;
-    }
-}
-
-/* Dropdown menu styling */
-.navbar-nav .dropdown .dropdown-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.navbar-nav .dropdown .dropdown-menu > ul > li {
-    position: relative;
-}
-
-.navbar-nav .dropdown .dropdown-menu .dropdown-toggler {
-    position: relative;
-}
-
-.navbar-nav .dropdown .dropdown-menu .dropdown-toggler::after {
-    content: "\f105";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.navbar-nav .dropdown .dropdown-menu .dropdown-item {
-    padding: 8px 15px;
-    font-size: 14px;
-    color: #333;
-    white-space: nowrap;
-}
-
-.navbar-nav .dropdown .dropdown-menu .dropdown-item:hover {
-    color: #FF324D;
-    background: transparent;
-}
-</style>
+</div>
+<!-- header-end -->

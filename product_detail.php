@@ -38,22 +38,22 @@ $product = $productStmt->fetch(PDO::FETCH_ASSOC);
 if (!$product && empty($city) && strpos($slug, '-') !== false) {
     $parts = explode('-', $slug);
     $lastPart = end($parts);
-    
+
     // Check if last part is a valid city slug
     $cityCheck = $db->prepare("SELECT * FROM cities WHERE slug = ? AND status = 'active'");
     $cityCheck->execute([$lastPart]);
     $cityCheckResult = $cityCheck->fetch();
-    
+
     if ($cityCheckResult) {
         // Last part is a city, so first part(s) is the product slug
         array_pop($parts); // Remove city part
         $newSlug = implode('-', $parts); // Rejoin remaining parts as product slug
-        
+
         // Try to find product with the new slug (without city)
         $productStmt = $db->prepare("SELECT * FROM products WHERE slug = ? AND brand_id = ? AND status = 'active'");
         $productStmt->execute([$newSlug, $brandData['id']]);
         $product = $productStmt->fetch(PDO::FETCH_ASSOC);
-        
+
         // Only use city extraction if we found a product with the new slug
         if ($product) {
             $slug = $newSlug;
@@ -149,237 +149,164 @@ if ($cityData && stripos($breadcrumbTitle, $cityData['name']) === false) {
     $breadcrumbTitle .= ' Authorised Dealer Distributor and Supplier in ' . $cityData['name'];
 }
 
+
+// Build array of all images (main image + gallery)
+// Use $currentProduct (protected) to ensure we always have the correct product data
+$allImages = [];
+if (!empty($currentProduct['image'])) {
+    $allImages[] = $currentProduct['image'];
+}
+if (!empty($gallery) && is_array($gallery)) {
+    $allImages = array_merge($allImages, $gallery);
+}
+
+// Get main image (first one)
+$mainImage = !empty($allImages[0]) ? UPLOAD_URL . '/' . $allImages[0] : SITE_URL . '/assets/images/product_img1.jpg';
+
 // Render breadcrumb (brand > product)
-renderBreadcrumb($breadcrumbTitle, [
-    ['text' => $currentBrandName, 'url' => SITE_URL . '/' . $currentBrandSlug],
-    ['text' => $breadcrumbTitle]
-]);
+// renderBreadcrumb($breadcrumbTitle, [
+//     ['text' => $currentBrandName, 'url' => SITE_URL . '/' . $currentBrandSlug],
+//     ['text' => $breadcrumbTitle]
+// ]);
 ?>
 
-<!-- START SECTION SHOP -->
-<div class="section">
-	<div class="container">
-		<div class="row">
-            <div class="col-lg-5 col-md-5 mb-5 mb-md-0">
-                
-              <div class="product-image">
-                    <div class="product_img_box">
-                        <?php
-                        // Build array of all images (main image + gallery)
-                        // Use $currentProduct (protected) to ensure we always have the correct product data
-                        $allImages = [];
-                        if (!empty($currentProduct['image'])) {
-                            $allImages[] = $currentProduct['image'];
-                        }
-                        if (!empty($gallery) && is_array($gallery)) {
-                            $allImages = array_merge($allImages, $gallery);
-                        }
-                        
-                        // Get main image (first one)
-                        $mainImage = !empty($allImages[0]) ? UPLOAD_URL . '/' . $allImages[0] : SITE_URL . '/assets/images/product_img1.jpg';
-                        ?>
-                        <img id="product_img" src="<?php echo htmlspecialchars($mainImage); ?>" alt="<?php echo htmlspecialchars($currentProduct['name']); ?>">
-                    </div>
-                    <?php if (count($allImages) > 0): ?>
-                    <div id="pr_item_gallery" class="product_gallery_item slick_slider" data-slides-to-show="4" data-slides-to-scroll="1" data-infinite="false">
-                        <?php foreach ($allImages as $index => $img): ?>
-                        <div class="item">
-                            <a href="#" class="product_gallery_item<?php echo $index === 0 ? ' active' : ''; ?>" data-image="<?php echo htmlspecialchars(UPLOAD_URL . '/' . $img); ?>">
-                                <img src="<?php echo htmlspecialchars(UPLOAD_URL . '/' . $img); ?>" alt="<?php echo htmlspecialchars($currentProduct['name']); ?>">
-                            </a>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
-                </div>
+
+<!-- team-details-start -->
+<div class="fx-team-details-person">
+    <div class="container fx-container-1">
+        <div class="fx-team-details-person-row">
+
+            <!-- left-img -->
+            <div class="d-flex justify-content-center border-dark pro-style" align="center">
+
+                <img src="<?php echo htmlspecialchars($mainImage); ?>" alt="">
             </div>
-            <div class="col-lg-6 col-md-6">
-                <div class="pr_detail">
-                    <div class="product_description">
-                        <h4 class="product_title"><a href="#"><?php echo htmlspecialchars($currentProduct['name']); ?></a></h4>
-                       <br>
-                       <br>
-                        <?php if (!empty($pageSEO['h2_text'])): ?>
-                    <p class="mb-4"><?php echo htmlspecialchars($pageSEO['h2_text']); ?></p>
+
+            <!-- right-data -->
+            <div class="fx-team-details-person-info ">
+                <h5 class="person-bio fx-heading-1">
+                    <?php echo htmlspecialchars($currentBrandName); ?>/<?php echo $breadcrumbTitle; ?>
+                </h5>
+                <h4 class="person-name text-uppercase fx-heading-1 fx-font-800">
+                    <?php echo htmlspecialchars($breadcrumbTitle); ?>
+                </h4>
+                <?php if (!empty($pageSEO['h2_text'])): ?>
+                    <p class="person-disc fx-para-1 has-opacity-7"><?php echo htmlspecialchars($pageSEO['h2_text']); ?></p>
                 <?php endif; ?>
-                        <?php if (!empty($currentProduct['short_description'] ?? '')): ?>
-                        <div class="pr_desc">
-                            <p><?php echo htmlspecialchars($currentProduct['short_description']); ?></p>
-                        </div>
-                        <?php endif; ?>
-                       
+                <?php if (!empty($currentProduct['short_description'] ?? '')): ?>
+                    <div class="person-disc fx-para-1 has-opacity-7">
+                        <p><?php echo htmlspecialchars($currentProduct['short_description']); ?></p>
                     </div>
-                    <hr>
-                    <div class="cart_extra">
-                        <div class="cart_btn">
-                            <a href="<?php echo SITE_URL; ?>/enquiry?product_id=<?php echo $currentProduct['id']; ?>" class="btn btn-fill-out"><i class="icon-envelope"></i> Send Enquiry</a>
-                        </div>
-                    </div>
-                    <hr>
-                    <ul class="product-meta">
-                        <?php if (!empty($currentProduct['sku'])): ?>
-                        <li>SKU: <a href="#"><?php echo htmlspecialchars($currentProduct['sku']); ?></a></li>
-                        <?php endif; ?>
-                        <li>Brand: <a href="<?php echo SITE_URL . '/' . htmlspecialchars($brandData['slug']); ?>"><?php echo htmlspecialchars($brandData['name']); ?></a></li>
-                    </ul>
-                    
-                    <div class="product_share">
-                        <span>Share:</span>
-                        <ul class="social_icons">
-                            <?php
-                            $shareUrl = urlencode($seoData['canonical_url'] ?? SITE_URL . '/' . $brandData['slug'] . '/' . $currentProduct['slug']);
-                            $shareTitle = urlencode($currentProduct['name']);
-                            ?>
-                            <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $shareUrl; ?>" target="_blank"><i class="ion-social-facebook"></i></a></li>
-                            <li><a href="https://twitter.com/intent/tweet?url=<?php echo $shareUrl; ?>&text=<?php echo $shareTitle; ?>" target="_blank"><i class="ion-social-twitter"></i></a></li>
-                            <li><a href="https://www.linkedin.com/shareArticle?url=<?php echo $shareUrl; ?>&title=<?php echo $shareTitle; ?>" target="_blank"><i class="ion-social-googleplus"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
+                <?php endif; ?>
+
+
+                <a href="<?php echo SITE_URL; ?>/enquiry ?>" aria-label="name" class="fx-pr-btn-1">
+                    <span class="text" data-back="request a quote" data-front="request a quote"></span>
+                </a>
+
+
             </div>
         </div>
-        <div class="row">
-        	<div class="col-12">
-            	<div class="large_divider clearfix"></div>
-            </div>
-        </div>
-        <div class="row">
-        	<div class="col-12">
-            	<div class="tab-style3">
-					<ul class="nav nav-tabs" role="tablist">
-						<?php if (!empty($currentProduct['description'] ?? '')): ?>
-						<li class="nav-item">
-							<a class="nav-link active" id="Description-tab" data-bs-toggle="tab" href="#Description" role="tab" aria-controls="Description" aria-selected="true">Description</a>
-                      	</li>
-                      	<?php endif; ?>
-                      	<?php if (!empty($specs)): ?>
-                      	<li class="nav-item">
-                        	<a class="nav-link<?php echo empty($currentProduct['description'] ?? '') ? ' active' : ''; ?>" id="Additional-info-tab" data-bs-toggle="tab" href="#Additional-info" role="tab" aria-controls="Additional-info" aria-selected="false">Specifications</a>
-                      	</li>
-                      	<?php endif; ?>
-                    </ul>
-                	<div class="tab-content shop_info_tab">
-                      	<?php if (!empty($currentProduct['description'] ?? '')): ?>
-                      	<div class="tab-pane fade show active" id="Description" role="tabpanel" aria-labelledby="Description-tab">
-                        	<?php echo $currentProduct['description']; ?>
-                      	</div>
-                      	<?php endif; ?>
-                      	<?php if (!empty($specs)): ?>
-                      	<div class="tab-pane fade<?php echo empty($currentProduct['description'] ?? '') ? ' show active' : ''; ?>" id="Additional-info" role="tabpanel" aria-labelledby="Additional-info-tab">
-                        	<table class="table table-bordered">
-                            	<?php foreach ($specs as $spec): ?>
-                            	<tr>
-                                	<td><?php echo htmlspecialchars($spec['spec_name']); ?></td>
-                                	<td><?php echo htmlspecialchars($spec['spec_value']); ?></td>
-                            	</tr>
-                            	<?php endforeach; ?>
-                        	</table>
-                      	</div>
-                      	<?php endif; ?>
-                	</div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-        	<div class="col-12">
-            	<div class="small_divider"></div>
-            	<div class="divider"></div>
-                <div class="medium_divider"></div>
-            </div>
-        </div>
-        <?php if (!empty($relatedProducts)): ?>
-        <div class="row">
-        	<div class="col-12">
-            	<div class="heading_s1">
-                	<h3>Related Products</h3>
-                </div>
-            	<div class="releted_product_slider carousel_slider owl-carousel owl-theme" data-margin="20" data-responsive='{"0":{"items": "1"}, "481":{"items": "2"}, "768":{"items": "3"}, "1199":{"items": "4"}}'>
-                	<?php foreach ($relatedProducts as $rel): ?>
-                	<?php
-                	$relUrl = SITE_URL . '/' . htmlspecialchars($brandData['slug']) . '/' . htmlspecialchars($rel['slug']);
-                	$relImage = !empty($rel['image']) ? UPLOAD_URL . '/' . $rel['image'] : SITE_URL . '/assets/images/product_img1.jpg';
-                	?>
-                	<div class="item">
-                        <a href="<?php echo $relUrl; ?>" class="product_wrap_link" style="display:block;text-decoration:none;color:inherit;">
-                            <div class="product">
-                                <div class="product_img">
-                                    <img src="<?php echo htmlspecialchars($relImage); ?>" alt="<?php echo htmlspecialchars($rel['name']); ?>">
-                                </div>
-                                <div class="product_info">
-                                    <h6 class="product_title"><?php echo htmlspecialchars($rel['name']); ?></h6>
-                                    <?php if (!empty($rel['short_description'] ?? '')): ?>
-                                    <div class="pr_desc">
-                                        <p><?php echo htmlspecialchars(mb_substr($rel['short_description'], 0, 100)) . (mb_strlen($rel['short_description']) > 100 ? '...' : ''); ?></p>
-                                    </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
     </div>
 </div>
-<!-- END SECTION SHOP -->
 
-<script>
-// Disable zoom effect on product images
-jQuery(document).ready(function($) {
-    // Wait for scripts.js to load, then disable zoom
-    setTimeout(function() {
-        // Destroy any existing zoom instances
-        if ($('#product_img').data('elevateZoom')) {
-            $('#product_img').data('elevateZoom').destroy();
-        }
-        
-        // Remove zoom container if it exists
-        $('.zoomContainer').remove();
-        
-        // Prevent zoom initialization by removing data attributes
-        $('#product_img').removeAttr('data-zoom-image');
-        $('.product_gallery_item').removeAttr('data-zoom-image');
-        
-        // Disable zoom on gallery items click
-        $('.product_gallery_item').off('click').on('click', function(e) {
-            e.preventDefault();
-            var newImage = $(this).data('image');
-            if (newImage) {
-                $('#product_img').attr('src', newImage);
-                $('.product_gallery_item').removeClass('active');
-                $(this).addClass('active');
+<div class="fx-team-details-disc fx-scn-redius">
+    <div class="container fx-container-1">
+
+        <!-- left-img -->
+        <div class="fx-team-details-disc-content">
+            <h3 class="title fx-heading-1 text-uppercase has-clr-white fx-font-800">Product Description</h3>
+
+            <div class="fx-para-1 disc  has-clr-white" style="text-align: justify; color: #fff !important;"><?php echo $currentProduct['description']; ?> </div>
+        </div>
+        <br>
+        <?php if (!empty($specs)): ?>
+            <div class="fx-team-details-disc-content">
+                <h3 class="title fx-heading-1 text-uppercase has-clr-white fx-font-800">Technical Specifications</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-bordered text-white">
+                            <?php foreach ($specs as $spec): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($spec['spec_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($spec['spec_value']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        <?php endif; ?>
+
+
+    </div>
+</div>
+<!-- blog-start -->
+<?php if (count($allImages) > 1): ?>
+    <div class="fx-blog-page-area pt-120 pb-120">
+        <div class="container fx-container-1">
+            <div class="fx-blog-page-item mb-65">
+                <?php foreach ($allImages as $index => $img): ?>
+                    <!-- single-blog -->
+                    <div class="fx-blog-1-item-single">
+                        <div class="item-img fix img-cover p-relative mb-35">
+                            <img src="<?php echo htmlspecialchars(UPLOAD_URL . '/' . $img); ?>" alt="">
+
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<!-- team-details-end -->
+<!-- team-start -->
+<?php if (!empty($relatedProducts)): ?>
+<div class="fx-team-1-area bg-default pt-120 pb-120 " data-background="assets/img/team/t1-bg.png">
+    <div class="container fx-container-1">
+        <!-- section-title -->
+        <div class="fx-team-1-scn-title mb-55">
+
+            <h2 class="fx-scn-title-2 txaa-split-text-3 txaa-split-text-3-ani ">Related Products</h2>
+        </div>
+
+        <!-- team-slider -->
+            <div class="fx-team-1-slider p-relative">
                 
-                // Destroy zoom again after image change
-                if ($('#product_img').data('elevateZoom')) {
-                    $('#product_img').data('elevateZoom').destroy();
-                }
-                $('.zoomContainer').remove();
-            }
-        });
-    }, 500);
-    
-    // Also prevent zoom initialization immediately
-    $('#product_img').removeAttr('data-zoom-image');
-    $('.product_gallery_item').removeAttr('data-zoom-image');
-});
-</script>
+                <div class="swiper-container mb-35 fix fx-t1-active">
+                    <div class="swiper-wrapper">
+                        <?php foreach ($relatedProducts as $rel): ?>
+                            <?php
+                                $relUrl = SITE_URL . '/' . htmlspecialchars($brandData['slug']) . '/' . htmlspecialchars($rel['slug']);
+                                $relImage = !empty($rel['image']) ? UPLOAD_URL . '/' . $rel['image'] : SITE_URL . '/assets/images/product_img1.jpg';
+                            ?>
+                            <!-- single-membar -->
+                            <div class="swiper-slide">
+                                <a href="<?php echo $relUrl; ?>" aria-label="name"
+                                   class="fx-team-1-slider-item"
+                                   style="display: block; text-decoration: none; color: inherit;">
+                                    <div class="item-img">
+                                        <img src="<?php echo htmlspecialchars($relImage); ?>" alt="">
+                                    </div>
+                                    <h5 class="person-name fx-heading-2 fx-font-500">
+                                        <?php echo htmlspecialchars($rel['name']); ?>
+                                    </h5>
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
-<style>
-/* Hide zoom container */
-.zoomContainer {
-    display: none !important;
-}
 
-/* Disable hover effects on product image */
-.product_img_box:hover .zoomContainer {
-    display: none !important;
-}
-
-#product_img {
-    cursor: default !important;
-}
-</style>
 
 <?php require __DIR__ . '/includes/public/footer.php'; ?>

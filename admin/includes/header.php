@@ -114,6 +114,9 @@ $currentAdmin = getCurrentAdmin();
             <li><a href="<?php echo SITE_URL; ?>/admin/testimonials.php" class="<?php echo (isset($currentPage) && $currentPage == 'testimonials') ? 'active' : ''; ?>">
                 <i class="bi bi-chat-quote"></i> Testimonials
             </a></li>
+            <li><a href="<?php echo SITE_URL; ?>/admin/faqs.php" class="<?php echo (isset($currentPage) && $currentPage == 'faqs') ? 'active' : ''; ?>">
+                <i class="bi bi-question-circle"></i> FAQs
+            </a></li>
             <li><a href="<?php echo SITE_URL; ?>/admin/pages.php" class="<?php echo (isset($currentPage) && $currentPage == 'pages') ? 'active' : ''; ?>">
                 <i class="bi bi-file-text"></i> Static Pages
             </a></li>

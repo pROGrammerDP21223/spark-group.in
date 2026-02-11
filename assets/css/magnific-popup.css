@@ -7,8 +7,10 @@
   z-index: 1042;
   overflow: hidden;
   position: fixed;
-  background: #0b0b0b;
-  opacity: 0.8; }
+  background: #0b0b0bc7;
+  opacity: 1;
+  backdrop-filter: blur(4px);
+}
 
 .mfp-wrap {
   top: 0;
@@ -28,7 +30,8 @@
   left: 0;
   top: 0;
   padding: 0 8px;
-  box-sizing: border-box; }
+  box-sizing: border-box; 
+}
 
 .mfp-container:before {
   content: '';
@@ -149,10 +152,26 @@ button::-moz-focus-inner {
 .mfp-image-holder .mfp-close,
 .mfp-iframe-holder .mfp-close {
   color: #FFF;
-  right: -6px;
-  text-align: right;
-  padding-right: 6px;
-  width: 100%; }
+  top: 15px;
+  right: -40px;
+  text-align: center;
+  padding-right: 0;
+  width: 40px;
+  line-height: 40px;
+  height: 40px;
+  font-size: 30px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
+
+@media (max-width: 991px) {
+  .mfp-image-holder .mfp-close,
+  .mfp-iframe-holder .mfp-close {
+    top: 10px;
+    right: 0px;
+  }
+}
+
 
 .mfp-counter {
   position: absolute;
@@ -249,7 +268,8 @@ img.mfp-img {
   display: block;
   line-height: 0;
   box-sizing: border-box;
-  padding: 40px 0 40px;
+  padding: 60px 0 40px;
+
   margin: 0 auto; }
 
 /* The shadow behind the image */
@@ -259,7 +279,7 @@ img.mfp-img {
     content: '';
     position: absolute;
     left: 0;
-    top: 40px;
+    top: 60px;
     bottom: 40px;
     display: block;
     right: 0;
@@ -267,7 +287,7 @@ img.mfp-img {
     height: auto;
     z-index: -1;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-    background: #444; }
+    background: transparent; }
   .mfp-figure small {
     color: #BDBDBD;
     display: block;
