@@ -548,5 +548,7 @@
 <script src="<?php echo SITE_URL; ?>/assets/js/ScrollTrigger.min.js"></script>
 <script src="<?php echo SITE_URL; ?>/assets/js/main.js"></script>
 
+<script id="messenger-widget-b" src="https://cdn.botpenguin.com/website-bot.js" defer>6995567a5ceb619f519c8af8,6925785c4eab316f9b60f13b</script>
+
 </body>
 </html>
