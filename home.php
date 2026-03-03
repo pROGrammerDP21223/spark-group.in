@@ -77,6 +77,231 @@ require __DIR__ . '/includes/public/header.php';
     </div>
 
 </div>
+
+<!-- hero-end -->
+<div class="fx-gap-12 "></div>
+
+<!-- about-start -->
+<div class="fx-about-1-area pt-120 pb-120 p-relative fix ">
+
+    <div class="fx-about-1-bg-img fix img-cover">
+        <img src="assets/img/about/a1-bg-img-1.png" alt="">
+    </div>
+
+    <div class="container fx-container-1">
+
+        <!-- section-title -->
+        <div class="fx-about-1-scn-title mb-55">
+            <h6 class="fx-subtitle-1">
+                <span>02</span>
+                <span class="txaa-split-text-2 txaa-split-text-2-ani">Who We Are</span>
+            </h6>
+            <h2 class="fx-scn-title-1 txaa-split-text-3 txaa-split-text-3-ani">AuthorizedChannel partner and Distributor
+                of Industrial Tools, Abrasives & Fastening Solutions</h2>
+        </div>
+        <span class="fx-about-1-line mb-60 txaascale0 fx-cube-1"></span>
+
+        <div class="fx-about-1-wrap row">
+
+            <!-- left-side -->
+            <div class="col-lg-4">
+                <div class="fx-about-1-left">
+                    <div class="fx-about-1-card txaaslideup ">
+                        <div class="card-img img-cover fix mb-20">
+                            <img src="https://images.unsplash.com/photo-1535732759880-bbd5c7265e3f?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+                        </div>
+                        <ul class="card-tags mb-15">
+                            <li>BOSCH</li>
+                            <li>TYROLIT</li>
+                            <li>ICFS</li>
+                        </ul>
+
+                        <h5 class="fx-heading-1 fx-font-500  card-title">
+                            <a href="#" aria-label="name">Industrial Tools & Fastening Solutions</a>
+                        </h5>
+
+                        <p class="fx-para-1 card-disc has-opacity-7">Supplying high-performance power tools, abrasives,
+                            and construction fastening systems for industrial and infrastructure applications.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- right-side -->
+            <div class="col-lg-8">
+                <div class="fx-about-1-content">
+                    <p class="fx-para-1 disc has-opacity-7">Spark Systems is an authorized dealer and channel partner of
+                        Bosch, Tyrolit, and ICFS, delivering high-quality power tools, abrasives, construction
+                        chemicals, and fastening systems. Based in Pune, we serve manufacturing industries, fabrication
+                        units, infrastructure contractors, and engineering companies with reliable products and
+                        technical support.
+                    </p>
+
+                    <div class="content-img fix img-cover mb-50">
+                        <img src="assets/img/process/home-add.jpeg"" alt="">
+                    </div>
+
+                    <p class=" fx-para-1 disc has-opacity-7">With over a decade of industry experience, we focus on
+                        providing durable, performance-driven solutions for cutting, grinding, drilling, anchoring, and
+                        precision measurement. Our commitment to genuine products, competitive pricing, and dependable
+                        service makes us a trusted partner for industrial and construction requirements.
+                        </p>
+
+
+
+                        <div class="fx-about-1-content-btn txxaslideup fix">
+                            <div class="txxaslideup-item fx-cube-1">
+                                <a href="<?php echo SITE_URL; ?>/about-us" aria-label="name" class="fx-pr-btn-1">
+                                    <span class="text" data-back="Know About Us" data-front="Know About Us"></span>
+                                    <i class="fa-solid fa-angle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- about-end -->
+    <!-- process-start -->
+    <div class="fx-process-1-area pt-150 pb-70 fix p-relative bg-default"
+        data-background="assets/img/process/p1-bg-img-1.png">
+
+
+
+        <div class="container fx-container-1">
+
+            <!-- section-title -->
+            <div class="fx-process-1-scn-title text-center mb-50">
+                <h6 class="fx-subtitle-1 has-mb-28 has-clr-white">
+                    <span>03</span>
+                    <span class="txaa-split-text-2 txaa-split-text-2-ani">Our Brands & Products</span>
+                </h6>
+                <h2 class="fx-scn-title-3 txaa-split-text-3 txaa-split-text-3-ani has-clr-white">Explore Our Range of
+                    Industrial Tools, Abrasives & Fastening Solutions
+                </h2>
+            </div>
+
+
+            <ul class="fx-process-1-tabs-btn p-relative mb-80" role="tablist">
+
+                <li class="fx-process-1-tabs-btn-line txaascale0 fx-cube-1"></li>
+
+                <?php if (!empty($brands)): ?>
+                    <?php $firstBrand = true; ?>
+                    <?php foreach ($brands as $brand): ?>
+                        <!-- single-btn -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fx-heading-2 <?php echo $firstBrand ? 'active' : ''; ?>"
+                                id="process-tab-<?php echo $brand['id']; ?>" data-bs-toggle="tab"
+                                data-bs-target="#process-<?php echo $brand['id']; ?>" type="button" role="tab"
+                                aria-controls="process-<?php echo $brand['id']; ?>"
+                                aria-selected="<?php echo $firstBrand ? 'true' : 'false'; ?>">
+                                <!-- <img src="<?php echo UPLOAD_URL . '/' . $brand['image']; ?>" alt="" width="200"> -->
+                                <?php echo htmlspecialchars($brand['name']); ?>
+                            </button>
+                        </li>
+                        <?php $firstBrand = false; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+            </ul>
+
+            <div class="tab-content fx-process-1-tabs-content" id="myTabContent">
+
+                <?php if (!empty($brands)): ?>
+                    <?php $firstBrand = true; ?>
+                    <?php foreach ($brands as $brand): ?>
+                        <!-- single-pane -->
+                        <div class="tab-pane fade animated fadeInUp <?php echo $firstBrand ? 'show active' : ''; ?>"
+                            id="process-<?php echo $brand['id']; ?>" role="tabpanel"
+                            aria-labelledby="process-tab-<?php echo $brand['id']; ?>">
+
+                            <div class="swiper-container mb-35 fix fx-t1-active">
+                                <?php
+                                // Get products for this brand
+                                $brandProducts = $db->prepare("SELECT * FROM products WHERE brand_id = ? AND status = 'active' ORDER BY sort_order ASC, name ASC LIMIT 12");
+                                $brandProducts->execute([$brand['id']]);
+                                $brandProducts = $brandProducts->fetchAll();
+                                $productCount = count($brandProducts);
+                                $centerClass = ($productCount <= 4) ? 'justify-content-center' : '';
+                                ?>
+                                <div class="swiper-wrapper 
+                                <?php 
+                                echo $centerClass;
+                                 ?>" 
+                                 <?php 
+                                 echo ($productCount <= 3) ? 'style="justify-content: center;"' : ''; 
+                                ?>
+                                >
+                                    <?php if (!empty($brandProducts)): ?>
+                                        <?php foreach ($brandProducts as $product): ?>
+                                            <div class="swiper-slide">
+                                                <a href="<?php echo SITE_URL . '/' . $brand['slug'] . '/' . $product['slug']; ?>"
+                                                   aria-label="<?php echo htmlspecialchars($product['name']); ?>"
+                                                   class="fx-team-1-slider-item"
+                                                   style="display: block; text-decoration: none; color: inherit;">
+                                                    <div class="item-img">
+                                                        <?php if (!empty($product['image'])): ?>
+                                                            <img src="<?php echo UPLOAD_URL . '/' . $product['image']; ?>"
+                                                                alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                                        <?php else: ?>
+                                                            <img src="assets/images/product_img1.jpg"
+                                                                alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <h5 class="person-name fx-heading-2 text-white fx-font-500">
+                                                        <?php echo htmlspecialchars($product['name']); ?>
+                                                    </h5>
+                                                </a>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <div class="swiper-slide">
+                                            <div class="fx-team-1-slider-item">
+                                                <h5 class="person-name fx-heading-2 fx-font-500">
+                                                    <?php echo htmlspecialchars($brand['name']); ?> - No products available.
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="fx-team-1-slider-pagination text-center mb-50">
+                                <div class="fx-slider-pagi-1 fx-t1-pagination">
+
+                                </div>
+                            </div>
+
+                            <div class="fx-slider-btn-1">
+                                <div class="fx-slider-btn-1-item fx-team-1-slider-btn-left  fx-t1-slider-prev">
+                                    <i class="fa-solid fa-angle-left"></i>
+                                    <i class="fa-solid fa-angle-left"></i>
+                                </div>
+                                <div class="fx-slider-btn-1-item fx-team-1-slider-btn-right fx-t1-slider-next">
+                                    <i class="fa-solid fa-angle-right"></i>
+                                    <i class="fa-solid fa-angle-right"></i>
+                                </div>
+                            </div>
+
+                        </div>
+                        <?php $firstBrand = false; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+            </div>
+        </div>
+
+    </div>
+    <!-- process-end -->
+
+    <!-- START SECTION SHOP -->
+
+
+    <!-- END SECTION SHOP -->
+
+
 <!-- serve-start -->
 <div class="fx-serve-1-area fix p-relative pt-120 pb-130">
 
@@ -411,231 +636,6 @@ require __DIR__ . '/includes/public/header.php';
     </div>
 </div>
 <!-- serve-end -->
-
-<!-- hero-end -->
-<div class="fx-gap-12 "></div>
-
-<!-- about-start -->
-<div class="fx-about-1-area pt-120 pb-120 p-relative fix ">
-
-    <div class="fx-about-1-bg-img fix img-cover">
-        <img src="assets/img/about/a1-bg-img-1.png" alt="">
-    </div>
-
-    <div class="container fx-container-1">
-
-        <!-- section-title -->
-        <div class="fx-about-1-scn-title mb-55">
-            <h6 class="fx-subtitle-1">
-                <span>02</span>
-                <span class="txaa-split-text-2 txaa-split-text-2-ani">Who We Are</span>
-            </h6>
-            <h2 class="fx-scn-title-1 txaa-split-text-3 txaa-split-text-3-ani">AuthorizedChannel partner and Distributor
-                of Industrial Tools, Abrasives & Fastening Solutions</h2>
-        </div>
-        <span class="fx-about-1-line mb-60 txaascale0 fx-cube-1"></span>
-
-        <div class="fx-about-1-wrap row">
-
-            <!-- left-side -->
-            <div class="col-lg-4">
-                <div class="fx-about-1-left">
-                    <div class="fx-about-1-card txaaslideup ">
-                        <div class="card-img img-cover fix mb-20">
-                            <img src="https://images.unsplash.com/photo-1535732759880-bbd5c7265e3f?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
-                        </div>
-                        <ul class="card-tags mb-15">
-                            <li>BOSCH</li>
-                            <li>TYROLIT</li>
-                            <li>ICFS</li>
-                        </ul>
-
-                        <h5 class="fx-heading-1 fx-font-500  card-title">
-                            <a href="#" aria-label="name">Industrial Tools & Fastening Solutions</a>
-                        </h5>
-
-                        <p class="fx-para-1 card-disc has-opacity-7">Supplying high-performance power tools, abrasives,
-                            and construction fastening systems for industrial and infrastructure applications.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- right-side -->
-            <div class="col-lg-8">
-                <div class="fx-about-1-content">
-                    <p class="fx-para-1 disc has-opacity-7">Spark Systems is an authorized dealer and channel partner of
-                        Bosch, Tyrolit, and ICFS, delivering high-quality power tools, abrasives, construction
-                        chemicals, and fastening systems. Based in Pune, we serve manufacturing industries, fabrication
-                        units, infrastructure contractors, and engineering companies with reliable products and
-                        technical support.
-                    </p>
-
-                    <div class="content-img fix img-cover mb-50">
-                        <img src="assets/img/process/home-add.jpeg"" alt="">
-                    </div>
-
-                    <p class=" fx-para-1 disc has-opacity-7">With over a decade of industry experience, we focus on
-                        providing durable, performance-driven solutions for cutting, grinding, drilling, anchoring, and
-                        precision measurement. Our commitment to genuine products, competitive pricing, and dependable
-                        service makes us a trusted partner for industrial and construction requirements.
-                        </p>
-
-
-
-                        <div class="fx-about-1-content-btn txxaslideup fix">
-                            <div class="txxaslideup-item fx-cube-1">
-                                <a href="<?php echo SITE_URL; ?>/about-us" aria-label="name" class="fx-pr-btn-1">
-                                    <span class="text" data-back="Know About Us" data-front="Know About Us"></span>
-                                    <i class="fa-solid fa-angle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-    <!-- about-end -->
-    <!-- process-start -->
-    <div class="fx-process-1-area pt-150 pb-70 fix p-relative bg-default"
-        data-background="assets/img/process/p1-bg-img-1.png">
-
-
-
-        <div class="container fx-container-1">
-
-            <!-- section-title -->
-            <div class="fx-process-1-scn-title text-center mb-50">
-                <h6 class="fx-subtitle-1 has-mb-28 has-clr-white">
-                    <span>03</span>
-                    <span class="txaa-split-text-2 txaa-split-text-2-ani">Our Brands & Products</span>
-                </h6>
-                <h2 class="fx-scn-title-3 txaa-split-text-3 txaa-split-text-3-ani has-clr-white">Explore Our Range of
-                    Industrial Tools, Abrasives & Fastening Solutions
-                </h2>
-            </div>
-
-
-            <ul class="fx-process-1-tabs-btn p-relative mb-80" role="tablist">
-
-                <li class="fx-process-1-tabs-btn-line txaascale0 fx-cube-1"></li>
-
-                <?php if (!empty($brands)): ?>
-                    <?php $firstBrand = true; ?>
-                    <?php foreach ($brands as $brand): ?>
-                        <!-- single-btn -->
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link fx-heading-2 <?php echo $firstBrand ? 'active' : ''; ?>"
-                                id="process-tab-<?php echo $brand['id']; ?>" data-bs-toggle="tab"
-                                data-bs-target="#process-<?php echo $brand['id']; ?>" type="button" role="tab"
-                                aria-controls="process-<?php echo $brand['id']; ?>"
-                                aria-selected="<?php echo $firstBrand ? 'true' : 'false'; ?>">
-                                <!-- <img src="<?php echo UPLOAD_URL . '/' . $brand['image']; ?>" alt="" width="200"> -->
-                                <?php echo htmlspecialchars($brand['name']); ?>
-                            </button>
-                        </li>
-                        <?php $firstBrand = false; ?>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-
-            </ul>
-
-            <div class="tab-content fx-process-1-tabs-content" id="myTabContent">
-
-                <?php if (!empty($brands)): ?>
-                    <?php $firstBrand = true; ?>
-                    <?php foreach ($brands as $brand): ?>
-                        <!-- single-pane -->
-                        <div class="tab-pane fade animated fadeInUp <?php echo $firstBrand ? 'show active' : ''; ?>"
-                            id="process-<?php echo $brand['id']; ?>" role="tabpanel"
-                            aria-labelledby="process-tab-<?php echo $brand['id']; ?>">
-
-                            <div class="swiper-container mb-35 fix fx-t1-active">
-                                <?php
-                                // Get products for this brand
-                                $brandProducts = $db->prepare("SELECT * FROM products WHERE brand_id = ? AND status = 'active' ORDER BY sort_order ASC, name ASC LIMIT 12");
-                                $brandProducts->execute([$brand['id']]);
-                                $brandProducts = $brandProducts->fetchAll();
-                                $productCount = count($brandProducts);
-                                $centerClass = ($productCount <= 4) ? 'justify-content-center' : '';
-                                ?>
-                                <div class="swiper-wrapper 
-                                <?php 
-                                echo $centerClass;
-                                 ?>" 
-                                 <?php 
-                                 echo ($productCount <= 3) ? 'style="justify-content: center;"' : ''; 
-                                ?>
-                                >
-                                    <?php if (!empty($brandProducts)): ?>
-                                        <?php foreach ($brandProducts as $product): ?>
-                                            <div class="swiper-slide">
-                                                <a href="<?php echo SITE_URL . '/' . $brand['slug'] . '/' . $product['slug']; ?>"
-                                                   aria-label="<?php echo htmlspecialchars($product['name']); ?>"
-                                                   class="fx-team-1-slider-item"
-                                                   style="display: block; text-decoration: none; color: inherit;">
-                                                    <div class="item-img">
-                                                        <?php if (!empty($product['image'])): ?>
-                                                            <img src="<?php echo UPLOAD_URL . '/' . $product['image']; ?>"
-                                                                alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                                        <?php else: ?>
-                                                            <img src="assets/images/product_img1.jpg"
-                                                                alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <h5 class="person-name fx-heading-2 text-white fx-font-500">
-                                                        <?php echo htmlspecialchars($product['name']); ?>
-                                                    </h5>
-                                                </a>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <div class="swiper-slide">
-                                            <div class="fx-team-1-slider-item">
-                                                <h5 class="person-name fx-heading-2 fx-font-500">
-                                                    <?php echo htmlspecialchars($brand['name']); ?> - No products available.
-                                                </h5>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="fx-team-1-slider-pagination text-center mb-50">
-                                <div class="fx-slider-pagi-1 fx-t1-pagination">
-
-                                </div>
-                            </div>
-
-                            <div class="fx-slider-btn-1">
-                                <div class="fx-slider-btn-1-item fx-team-1-slider-btn-left  fx-t1-slider-prev">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                    <i class="fa-solid fa-angle-left"></i>
-                                </div>
-                                <div class="fx-slider-btn-1-item fx-team-1-slider-btn-right fx-t1-slider-next">
-                                    <i class="fa-solid fa-angle-right"></i>
-                                    <i class="fa-solid fa-angle-right"></i>
-                                </div>
-                            </div>
-
-                        </div>
-                        <?php $firstBrand = false; ?>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-
-            </div>
-        </div>
-
-    </div>
-    <!-- process-end -->
-
-    <!-- START SECTION SHOP -->
-
-
-    <!-- END SECTION SHOP -->
-
-
 
 
     <!-- START SECTION SHOP -->
