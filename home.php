@@ -86,7 +86,7 @@ require __DIR__ . '/includes/public/header.php';
 
     <div class="fx-about-1-bg-img fix img-cover">
      
-        <img src="assets/img/about/a1-bg-img-2.png" alt="ICFS Chemical Anchor Stud Manufacturing Process">
+        <img src="assets/img/about/a1-bg-img-1.png" alt="ICFS Chemical Anchor Stud Manufacturing Process">
     </div>  
 
     <div class="container fx-container-1">
@@ -112,9 +112,11 @@ require __DIR__ . '/includes/public/header.php';
                             <img src="https://images.unsplash.com/photo-1535732759880-bbd5c7265e3f?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
                         </div>
                         <ul class="card-tags mb-15">
-                            <li>BOSCH</li>
+                        <li>ICFS</li>
+                            
                             <li>TYROLIT</li>
-                            <li>ICFS</li>
+                            <li>BOSCH</li>
+                            
                         </ul>
 
                         <h5 class="fx-heading-1 fx-font-500  card-title">
@@ -131,14 +133,14 @@ require __DIR__ . '/includes/public/header.php';
             <div class="col-lg-8">
                 <div class="fx-about-1-content">
                     <p class="fx-para-1 disc has-opacity-7">Spark Systems is an authorized dealer and channel partner of
-                        Bosch, Tyrolit, and ICFS. Along with industrial tools and abrasives, we place special emphasis on
+                        ICFS, Tyrolit, and BOSCH. Along with industrial tools and abrasives, we place special emphasis on
                         ICFS (IndoSpark) fastening and construction chemical solutions for manufacturing units,
                         infrastructure contractors, fabrication teams, and engineering projects. Based in Pune, we support
                         customers with reliable products, technical guidance, and dependable supply.
                     </p>
 
                     <div class="content-img fix img-cover mb-50">
-                        <img src="assets/img/process/home-add.jpeg"" alt="">
+                        <img src="assets/img/process/a1-bg-img-1.png"" alt="ICFS Chemical Anchor Stud Manufacturing Process">
                     </div>
 
                     <p class=" fx-para-1 disc has-opacity-7">Our ICFS product focus includes
@@ -171,7 +173,7 @@ require __DIR__ . '/includes/public/header.php';
     <!-- about-end -->
 
     <!-- ICFS Highlight Start -->
-    <div class="fx-icfs-highlight-area pt-100 pb-100 p-relative fix bg-default">
+    <!-- <div class="fx-icfs-highlight-area pt-100 pb-100 p-relative fix bg-default">
         <div class="container fx-container-1">
             <div class="fx-process-1-scn-title text-center mb-50">
                 <h6 class="fx-subtitle-1 has-mb-28 has-clr-white">
@@ -272,7 +274,7 @@ require __DIR__ . '/includes/public/header.php';
                 </a>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- ICFS Highlight End -->
 
     <!-- process-start -->
