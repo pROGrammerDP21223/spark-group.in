@@ -140,7 +140,7 @@ require __DIR__ . '/includes/public/header.php';
                     </p>
 
                     <div class="content-img fix img-cover mb-50">
-                        <img src="assets/img/process/a1-bg-img-1.png"" alt="ICFS Chemical Anchor Stud Manufacturing Process">
+                        <img src="assets/img/process/a1-bg-img-2.png" alt="ICFS Chemical Anchor Stud Manufacturing Process">
                     </div>
 
                     <p class=" fx-para-1 disc has-opacity-7">Our ICFS product focus includes
