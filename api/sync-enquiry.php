@@ -49,6 +49,32 @@ if (!empty($data['address'])) {
     }
 }
 
+// Preserve uploaded file link and raw payload details in local enquiry message log.
+$rawPayloadForLog = null;
+if (!empty($data['raw_payload']) && is_array($data['raw_payload'])) {
+    $rawPayloadForLog = $data['raw_payload'];
+} elseif (!empty($data['rawPayload']) && is_array($data['rawPayload'])) {
+    $rawPayloadForLog = $data['rawPayload'];
+}
+
+$fileLink = '';
+if (!empty($data['file_link'])) {
+    $fileLink = sanitize($data['file_link']);
+} elseif (is_array($rawPayloadForLog) && !empty($rawPayloadForLog['file_link'])) {
+    $fileLink = sanitize($rawPayloadForLog['file_link']);
+}
+
+if (!empty($fileLink)) {
+    $message .= (!empty($message) ? "\n\n" : '') . 'File Link: ' . $fileLink;
+}
+
+if (is_array($rawPayloadForLog) && !empty($rawPayloadForLog)) {
+    $encodedRawPayload = json_encode($rawPayloadForLog, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    if ($encodedRawPayload !== false) {
+        $message .= (!empty($message) ? "\n\n" : '') . 'Raw Payload: ' . $encodedRawPayload;
+    }
+}
+
 // Get product/brand IDs from URL parameters or data
 $product_id = intval($data['product_id'] ?? $_GET['product_id'] ?? 0);
 $brand_id = intval($data['brand_id'] ?? $_GET['brand_id'] ?? 0);

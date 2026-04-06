@@ -723,7 +723,7 @@ form.addEventListener('submit', async (e) => {
             const categoryId = urlParams.get('category_id') || document.querySelector('input[name="category_id"]')?.value || null;
             
             try {
-                await syncToLocalDatabase(formData, productId, brandId, categoryId);
+                await syncToLocalDatabase(formData, productId, brandId, categoryId, rawPayload);
             } catch (syncError) {
                 // Log error but don't show to user (external submission succeeded)
                 console.error('Failed to sync to local database:', syncError);
@@ -1176,7 +1176,7 @@ function checkAndPrefillForm() {
 /**
  * Sync enquiry data to local database after external API submission succeeds
  */
-async function syncToLocalDatabase(formData, productId = null, brandId = null, categoryId = null) {
+async function syncToLocalDatabase(formData, productId = null, brandId = null, categoryId = null, rawPayload = null) {
     try {
         // Get product/brand/category IDs from URL parameters or hidden fields if not provided
         if (!productId) {
@@ -1204,6 +1204,14 @@ async function syncToLocalDatabase(formData, productId = null, brandId = null, c
             brand_id: brandId,
             category_id: categoryId
         };
+
+        // Keep all extra collected fields (including file_link) for local logging.
+        if (rawPayload && typeof rawPayload === 'object') {
+            syncPayload.raw_payload = rawPayload;
+            if (rawPayload.file_link) {
+                syncPayload.file_link = rawPayload.file_link;
+            }
+        }
         
         // Send to local sync endpoint
         const syncResponse = await fetch(`${window.location.origin}/api/sync-enquiry.php`, {
